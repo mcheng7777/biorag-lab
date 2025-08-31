@@ -3,9 +3,28 @@
 ## 1. Model Integration Architecture
 
 ### A. Core Components
-1. **Model Service Layer**
+
+1. **Development Environment**
+   - Transformers for local development
+   - Built-in model serving capabilities
+   - Easy debugging and iteration
+   - Local fine-tuning experiments
+
+2. **Production Environment** (Future)
+   - vLLM for high-performance serving
+   - Ray for distributed computing
+   - Cloud GPU optimization
+   - Load balancing and scaling
+
+3. **Common Infrastructure**
+   - Shared model configurations
+   - Consistent API interfaces
+   - Unified monitoring
+   - Compatible data formats
+
+4. **Model Service Layer**
    - Model loading and management
-   - Configurable model settings
+   - Configurable settings
    - Resource management
    - Caching strategy
 

@@ -6,8 +6,9 @@
 - Git
 
 For local development without Docker (optional):
-- Python 3.13+ (we're using 3.13.3)
-- Node.js (to be installed)
+- Python 3.12 (we're using 3.12.11)
+- Node.js 20 LTS
+- uv package manager
 
 ## Quick Start with Docker
 
@@ -52,16 +53,9 @@ docker run -p 8000:8000 biorag-lab-backend:prod
 
 ### Backend Setup
 
-#### 1. Prerequisites
-- Python 3.12 (required)
-- uv package manager
-- Git
-
+#### 1. Install uv (Python Package Manager)
 ```bash
-# Install Python 3.12 via Homebrew (macOS)
-brew install python@3.12
-
-# Install uv package manager
+# Install uv using the official installation script
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
@@ -70,14 +64,11 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 # Navigate to backend directory
 cd backend
 
-# Create virtual environment with Python 3.12
-/opt/homebrew/bin/python3.12 -m venv backend
+# Create virtual environment
+uv venv
 
 # Activate virtual environment
-source backend/bin/activate
-
-# Verify Python version
-python --version  # Should show Python 3.12.x
+source .venv/bin/activate
 ```
 
 #### 3. Install Backend Dependencies
@@ -86,31 +77,38 @@ python --version  # Should show Python 3.12.x
 uv pip install -r requirements.txt
 ```
 
-Current backend dependencies:
+Current backend dependencies (as of GPT-OSS integration):
 
 Core Dependencies:
 - Python 3.12.11
 - PyTorch 2.8.0
 - Transformers 4.56.0
 - FastAPI 0.116.1
-- Pydantic
+- Pydantic & pydantic-settings
+- structlog (for structured logging)
 
 Model & Training:
-- Accelerate
-- DeepSpeed
-- Datasets
-- Evaluate
-- Wandb
+- Accelerate (for distributed training)
+- DeepSpeed (for model optimization)
+- Datasets (for data loading)
+- Evaluate (for model evaluation)
+- Wandb (for experiment tracking)
+- Safetensors (for model weights)
 
 Development Tools:
-- Black
-- Flake8
-- Pytest
-- httpx
+- Black (code formatting)
+- Flake8 (linting)
+- Pytest (testing)
+- httpx (HTTP client for testing)
 
-Future Production Dependencies:
-- vLLM (for optimized model serving)
-- Ray (for distributed computing)
+Model Serving:
+- transformers-serve (for local development)
+- vLLM (for production deployment - Linux only)
+
+Future Dependencies:
+- LangChain & LangGraph (for RAG pipeline)
+- FAISS (for vector search)
+- Gemini API (for embeddings and fallback)
 
 ## Frontend Setup
 
@@ -178,10 +176,24 @@ TBD - Will document Supabase project setup and configuration
 
 ### Backend (.env)
 ```env
-# To be added:
+# Model Configuration
+MODEL_MODEL_CONFIG__MODEL_ID=openai/gpt-oss-20b
+MODEL_MODEL_CONFIG__MAX_NEW_TOKENS=512
+MODEL_MODEL_CONFIG__TEMPERATURE=0.7
+MODEL_MODEL_CONFIG__TOP_P=0.95
+
+# Resource Limits
+MODEL_MAX_MEMORY_GB=16.0
+MODEL_MAX_GPU_MEMORY_GB=16.0
+
+# Monitoring
+MODEL_ENABLE_METRICS=true
+MODEL_ENABLE_TRACING=true
+MODEL_METRICS_PORT=9090
+
+# Database (to be added)
 SUPABASE_URL=your_supabase_url
 SUPABASE_KEY=your_supabase_key
-GEMINI_API_KEY=your_gemini_api_key
 ```
 
 ### Frontend (.env.local)
@@ -199,8 +211,20 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 docker-compose up backend
 
 # Without Docker (from backend directory with virtual environment activated)
-uvicorn app.main:app --reload
+uvicorn app.main:app --reload --port 8001 --log-level debug
+
+# Development server will be available at:
+# - API: http://localhost:8001
+# - API Documentation: http://localhost:8001/docs
+# - Metrics: http://localhost:9090/metrics (if enabled)
 ```
+
+#### Development Server Options
+- `--reload`: Enable auto-reload on code changes
+- `--port 8001`: Use port 8001 (8000 might be used by other services)
+- `--log-level debug`: Detailed logging for development
+- `--workers 1`: Single worker for development (default)
+- `--host 0.0.0.0`: Listen on all interfaces (if needed)
 
 ### Running Frontend
 ```bash
@@ -249,6 +273,53 @@ npm run lint
 npm run build  # This will also check types
 ```
 
+## Troubleshooting
+
+### Common Issues
+
+#### Python Environment
+- **Wrong Python Version**: Make sure you're using Python 3.12.x
+  ```bash
+  # Check Python version
+  python --version
+  
+  # If wrong version, make sure you've activated the correct environment
+  source backend/bin/activate
+  ```
+
+- **Package Installation Fails**: Try updating uv
+  ```bash
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  ```
+
+#### Model Service
+- **Out of Memory**: Reduce model configuration in `.env`:
+  ```env
+  MODEL_MAX_MEMORY_GB=8.0  # Reduce memory limit
+  MODEL_MODEL_CONFIG__MAX_NEW_TOKENS=256  # Reduce token limit
+  ```
+
+- **Port Already in Use**: Change port in uvicorn command:
+  ```bash
+  uvicorn app.main:app --reload --port 8002  # Try different port
+  ```
+
+#### Development Server
+- **Auto-reload Not Working**: Check file watch limits
+  ```bash
+  # macOS: Check current limits
+  launchctl limit maxfiles
+  
+  # Increase if needed (temporary)
+  sudo launchctl limit maxfiles 65536 200000
+  ```
+
+### Getting Help
+- Check the [GitHub Issues](https://github.com/yourusername/biorag-lab/issues)
+- Review logs: `uvicorn` outputs to stdout/stderr
+- Enable debug logging: `--log-level debug`
+- Check metrics endpoint: `/metrics` if enabled
+
 ## Notes
 
 - The project uses a monorepo structure with separate `frontend` and `backend` directories
@@ -256,3 +327,4 @@ npm run build  # This will also check types
 - Development tools (black, flake8, pytest) are included in the main requirements.txt for consistency
 - Additional dependencies will be added incrementally as we implement each phase of the project
 - Docker is the recommended way to run the project, but local setup is also supported
+- Model serving uses `transformers-serve` for local development and `vLLM` for production (Linux only)

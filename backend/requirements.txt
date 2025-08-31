@@ -2,20 +2,33 @@
 fastapi
 uvicorn[standard]
 pydantic
-pydantic-settings  # for configuration management
+pydantic-settings
 python-dotenv
 
-# Database
-supabase
+# Model and Inference (Development)
+transformers        # Base transformer library
+torch              # PyTorch for model operations
+accelerate         # Efficient model loading
+safetensors        # Model weight handling
 
-# Development tools
+# Training and Fine-tuning
+datasets           # Hugging Face datasets
+evaluate          # Model evaluation
+wandb             # Training monitoring
+deepspeed         # Distributed training
+
+# Monitoring and Logging
+structlog          # Structured logging
+prometheus-client  # Metrics collection
+opentelemetry-api  # Tracing
+opentelemetry-sdk  # Tracing
+
+# Development and Testing
 pytest
 black
 flake8
-httpx  # for async HTTP requests
+httpx
 
-# The following packages will be added in later phases:
-# langchain  # Phase 3 - Retrieval Layer
-# langchain-google-genai  # Phase 4 - Code Generation
-# faiss-cpu  # Phase 3 - Retrieval Layer
-# tenacity  # Phase 4 - Code Generation
+# Note: For production deployment, we'll add:
+# vllm               # High-performance inference
+# ray                # Distributed computing
