@@ -37,8 +37,42 @@ It helps users:
    - Provide metadata + links.
 
 4. **Code Generation**
-   - Use Gemini for R/Python code generation.
-   - Validate code (syntax, imports, basic run).
+   
+   A. Documentation-Based Code Generation
+   - Accept package documentation URLs (e.g., ComplexHeatmap, seaborn)
+   - Parse and understand package documentation
+   - Generate code examples based on user queries using GPT-OSS-20B
+   - Validate against package API specifications
+   - Provide interactive examples with common use cases
+   - Fine-tune model on package-specific documentation
+   
+   B. Paper Implementation Code Generation
+   - Generate code based on selected papers and datasets
+   - Support multiple implementation types:
+     - Figure/plot reproduction
+     - Statistical analysis replication
+     - Method implementation from scratch
+   - Link code to specific paper sections/figures
+   - Include explanatory comments for methodology
+   - Fine-tune model on paper-code pairs
+   
+   C. Code Validation & RL Training
+   - Execute generated code in sandboxed environment
+   - Validate outputs against expected results
+   - Use execution success as RL reward signal
+   - Collect user feedback on code quality
+   - Fine-tune GPT-OSS-20B through RL:
+     - Documentation adherence rewards
+     - Code execution success rewards
+     - User feedback integration
+     - Continuous model improvement
+   
+   D. Model Architecture
+   - Base model: GPT-OSS-20B (Apache 2.0 licensed)
+   - Specialized fine-tuning for each generation path
+   - Configurable reasoning levels (low/medium/high)
+   - Built-in tool use capabilities
+   - Local deployment support
 
 5. **Embeddings**
    - Use Gemini embeddings for FAISS index.

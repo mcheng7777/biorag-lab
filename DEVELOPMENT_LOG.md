@@ -39,6 +39,23 @@
 - Frontend development server on port 3000
 - Docker configuration ready but needs testing
 
+### Recent Changes
+
+#### Model Selection Update
+- Adopted GPT-OSS-20B as primary code generation model:
+  - Apache 2.0 licensed for commercial use
+  - Supports local deployment (16GB GPU)
+  - Built-in reasoning levels and tool use
+  - Fine-tunable for specialized tasks
+  - Ideal for RL training pipeline
+
+#### Code Generation Clarification
+- Updated PRD with two distinct code generation paths:
+  1. Documentation-based generation (package usage)
+  2. Paper implementation generation
+- Enhanced code playground UI to support both paths
+- Added RL training strategy for code validation
+
 ### Next Steps
 
 #### Immediate TODOs
