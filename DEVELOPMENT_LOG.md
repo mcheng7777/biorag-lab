@@ -41,6 +41,15 @@
 
 ### Recent Changes
 
+#### Development Environment Setup (2024-02-14)
+- Set up Python 3.12 virtual environment named 'backend'
+- Installed core dependencies:
+  - PyTorch 2.8.0
+  - Transformers 4.56.0
+  - FastAPI 0.116.1
+- Decided to use transformers-based serving for local development
+- Plan to use vLLM for production deployment
+
 #### Model Selection Update
 - Adopted GPT-OSS-20B as primary code generation model:
   - Apache 2.0 licensed for commercial use

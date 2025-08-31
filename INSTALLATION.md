@@ -52,9 +52,16 @@ docker run -p 8000:8000 biorag-lab-backend:prod
 
 ### Backend Setup
 
-#### 1. Install uv (Python Package Manager)
+#### 1. Prerequisites
+- Python 3.12 (required)
+- uv package manager
+- Git
+
 ```bash
-# Install uv using the official installation script
+# Install Python 3.12 via Homebrew (macOS)
+brew install python@3.12
+
+# Install uv package manager
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
@@ -63,11 +70,14 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 # Navigate to backend directory
 cd backend
 
-# Create virtual environment
-uv venv
+# Create virtual environment with Python 3.12
+/opt/homebrew/bin/python3.12 -m venv backend
 
 # Activate virtual environment
-source .venv/bin/activate
+source backend/bin/activate
+
+# Verify Python version
+python --version  # Should show Python 3.12.x
 ```
 
 #### 3. Install Backend Dependencies
@@ -76,23 +86,31 @@ source .venv/bin/activate
 uv pip install -r requirements.txt
 ```
 
-Current backend dependencies (as of initial setup):
-- fastapi
-- uvicorn[standard]
-- pydantic
-- pydantic-settings
-- python-dotenv
-- supabase
-- pytest (dev)
-- black (dev)
-- flake8 (dev)
+Current backend dependencies:
+
+Core Dependencies:
+- Python 3.12.11
+- PyTorch 2.8.0
+- Transformers 4.56.0
+- FastAPI 0.116.1
+- Pydantic
+
+Model & Training:
+- Accelerate
+- DeepSpeed
+- Datasets
+- Evaluate
+- Wandb
+
+Development Tools:
+- Black
+- Flake8
+- Pytest
 - httpx
 
-Future dependencies (to be added in later phases):
-- langchain (Phase 3)
-- langchain-google-genai (Phase 4)
-- faiss-cpu (Phase 3)
-- tenacity (Phase 4)
+Future Production Dependencies:
+- vLLM (for optimized model serving)
+- Ray (for distributed computing)
 
 ## Frontend Setup
 
