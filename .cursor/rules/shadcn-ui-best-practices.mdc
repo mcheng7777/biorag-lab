@@ -1,0 +1,10 @@
+---
+name: shadcn-ui-best-practices.mdc
+description: Best practices for UI components and styling with Shadcn UI and Tailwind
+globs: **/*.{ts,tsx,css}
+---
+
+- Use Tailwind CSS for utility-first styling to maintain consistency.
+- Follow Shadcn UI component guidelines for reusable and accessible components.
+- Ensure UI components are responsive and adapt to different screen sizes.
+- Leverage Tailwind's JIT mode for faster build times and smaller CSS bundles.

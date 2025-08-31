@@ -1,0 +1,10 @@
+---
+name: react-query-best-practices.mdc
+description: Best practices for data fetching and state management with React Query
+globs: **/*.{ts,tsx}
+---
+
+- Use query keys to uniquely identify queries for better cache management.
+- Implement pagination and infinite scrolling for large datasets.
+- Use `useMutation` for creating, updating, and deleting data with optimistic updates.
+- Handle errors and loading states gracefully in the UI.

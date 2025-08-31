@@ -1,0 +1,10 @@
+---
+name: github-actions-best-practices.mdc
+description: Best practices for CI/CD with GitHub Actions
+globs: **/*.yml
+---
+
+- Use matrix builds to test across multiple environments and configurations.
+- Cache dependencies to speed up build times.
+- Implement separate workflows for frontend and backend to isolate issues.
+- Use environment secrets for sensitive information and API keys.

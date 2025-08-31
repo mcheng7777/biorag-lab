@@ -1,0 +1,11 @@
+---
+name: supabase-best-practices.mdc
+description: Best practices for using Supabase for authentication and database management
+globs: **/*.{ts,tsx}
+---
+
+- Use Supabase's built-in authentication for secure user management.
+- Implement row-level security policies for data protection.
+- Utilize real-time subscriptions for live updates in the UI.
+- Regularly back up your database and monitor performance.
+

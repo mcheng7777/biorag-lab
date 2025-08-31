@@ -1,0 +1,21 @@
+# Core API dependencies
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings  # for configuration management
+python-dotenv
+
+# Database
+supabase
+
+# Development tools
+pytest
+black
+flake8
+httpx  # for async HTTP requests
+
+# The following packages will be added in later phases:
+# langchain  # Phase 3 - Retrieval Layer
+# langchain-google-genai  # Phase 4 - Code Generation
+# faiss-cpu  # Phase 3 - Retrieval Layer
+# tenacity  # Phase 4 - Code Generation

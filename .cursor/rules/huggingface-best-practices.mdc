@@ -1,0 +1,10 @@
+---
+name: huggingface-best-practices.mdc
+description: Best practices for deploying applications on Hugging Face Spaces
+globs: **/*.{py,js}
+---
+
+- Optimize your Dockerfile for smaller image sizes and faster builds.
+- Use environment variables for configuration settings.
+- Monitor resource usage to ensure efficient deployment.
+- Regularly update your models and dependencies to leverage improvements.

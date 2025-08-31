@@ -1,0 +1,10 @@
+---
+name: langchain-best-practices.mdc
+description: Best practices for integrating LangChain in RAG pipelines
+globs: **/*.{py}
+---
+
+- Modularize your LangChain components for better maintainability.
+- Use caching strategies to optimize retrieval performance.
+- Implement logging and monitoring for debugging and performance tracking.
+- Regularly update your models and embeddings to ensure relevance.
