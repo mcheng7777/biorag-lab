@@ -66,7 +66,7 @@ biorag-lab/
 2. **Quick Start with Docker**
    ```bash
    # Clone the repository
-   git clone <repository-url>
+   git clone https://github.com/mcheng7777/biorag-lab.git
    cd biorag-lab
 
    # Start development environment
