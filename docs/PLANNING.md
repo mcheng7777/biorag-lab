@@ -1,6 +1,6 @@
 # BioRAG-Lab – Planning Document
 
-## Phase 1 – Project Setup _(In Progress)_
+## Phase 1 – Project Setup ✓
 
 ### Frontend Setup ✓
 - [x] Initialize Next.js project with TypeScript
@@ -9,15 +9,15 @@
 - [x] Implement responsive design
 - [x] Set up initial pages structure
 
-### Frontend Components _(In Progress)_
+### Frontend Components ✓
 - [x] Create shared components (PageHeader, Cards, etc.)
 - [x] Implement home page layout
 - [x] Create papers page with search and filters
 - [x] Create datasets page with search and filters
 - [x] Create code playground with split view
-- [ ] Add loading states and animations
-- [ ] Implement error boundaries
-- [ ] Add toast notifications for actions
+- [x] Add loading states and animations
+- [x] Implement error boundaries
+- [x] Add toast notifications for actions
 
 ### Backend Setup ✓
 - [x] Set up FastAPI with project structure
