@@ -25,12 +25,37 @@
 - [x] Create initial API endpoints
 - [x] Set up development environment
 
-### Backend Development _(Next Priority)_
+### AI Agent Development _(Next Priority)_
+- [ ] Set up MCP server integration
+  - [ ] Download and configure paper-search-mcp server
+  - [ ] Set up MCP client for tool communication
+  - [ ] Test MCP server connectivity
+- [ ] Implement Gemini API integration
+  - [ ] Set up Google Generative AI client
+  - [ ] Configure Gemini Pro for agent reasoning
+  - [ ] Implement conversation management
+- [ ] Build LangGraph agent orchestration
+  - [ ] Design agent workflow nodes
+  - [ ] Implement tool calling with MCP server
+  - [ ] Create conversation state management
+  - [ ] Add error handling and retry logic
+- [ ] Create agent API endpoints
+  - [ ] Chat endpoint for user interactions
+  - [ ] Tool execution endpoints
+  - [ ] Conversation history management
+  - [ ] Streaming responses for real-time interaction
+- [ ] Add agent capabilities
+  - [ ] Paper search and analysis
+  - [ ] Code generation with context
+  - [ ] Dataset exploration
+  - [ ] Research summarization
+
+### Backend API Development _(After Agent Setup)_
 - [ ] Implement core API endpoints
-  - [ ] Search papers endpoint (`/papers/search`)
-  - [ ] Search datasets endpoint (`/datasets/search`)
-  - [ ] Generate code endpoint (`/generate_code`)
-  - [ ] Health check with service status
+  - [ ] Agent chat endpoint (`/agent/chat`)
+  - [ ] Tool execution endpoint (`/agent/tools`)
+  - [ ] Conversation management (`/agent/conversations`)
+  - [ ] Enhanced health check with agent status
 - [ ] Add proper error handling and logging
   - [ ] Global exception handlers
   - [ ] Structured logging with structlog
@@ -46,7 +71,7 @@
 - [ ] Test backend functionality locally
   - [ ] Unit tests for endpoints
   - [ ] Integration tests
-  - [ ] API contract tests
+  - [ ] Agent workflow tests
 
 ### Docker Setup _(After Backend Development)_
 - [x] Create development Dockerfile

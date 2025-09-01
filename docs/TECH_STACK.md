@@ -10,6 +10,10 @@
   - Monaco Editor for code display
   - Syntax highlighting for R/Python
   - Real-time validation
+- **Chat Interface**:
+  - Real-time agent conversations
+  - Streaming responses
+  - Tool execution visualization
 - **Deployment**: Hugging Face Spaces
 
 ## Backend
@@ -19,7 +23,22 @@
 - **FAISS** for retrieval
 - **Uvicorn** for serving
 
-### LLM & RAG
+### AI Agent Architecture
+- **MCP (Model Context Protocol)**:
+  - paper-search-mcp server for academic tools
+  - Tool communication and execution
+  - Extensible tool ecosystem
+- **Google Gemini API**:
+  - Gemini Pro for agent reasoning
+  - Tool calling and conversation
+  - Code generation with context
+- **LangGraph**:
+  - Agent workflow orchestration
+  - State management and conversation flow
+  - Error handling and retry logic
+  - Streaming response management
+
+### LLM & RAG (Future)
 - **GPT-OSS-20B**:
   - Primary code generation model
   - Fine-tunable for specialized tasks
@@ -28,9 +47,9 @@
 - **Gemini API**:
   - Embeddings (`text-embedding-004`)
   - Summarization (`gemini-pro`)
-  - Fallback code generation
+  - Agent reasoning and tool calling
 - **LangChain** integration layer for RAG
-- **LangGraph** for RAG pipeline
+- **LangGraph** for agent orchestration
 
 ### Documentation Processing
 - **Beautiful Soup / Scrapy**: Documentation scraping
@@ -54,13 +73,41 @@
 - **Supabase (Postgres + Auth)**
 - Tables:
   - `users`
+  - `conversations` (NEW)
+  - `messages` (NEW)
+  - `tool_executions` (NEW)
   - `queries`
   - `feedback`
-  - `package_docs` (NEW)
-  - `code_executions` (NEW)
-  - `rl_training_data` (NEW)
+  - `package_docs` (Future)
+  - `code_executions` (Future)
+  - `rl_training_data` (Future)
 
-## RL Component
+## Agent Capabilities
+
+### Paper Search & Analysis
+- **Multi-source search**: PubMed, arXiv, bioRxiv, CrossRef, etc.
+- **Paper download**: PDF retrieval and text extraction
+- **Research summarization**: AI-powered paper analysis
+- **Citation analysis**: Reference tracking and impact assessment
+
+### Code Generation
+- **Context-aware generation**: Based on papers and user requirements
+- **Multi-language support**: R, Python, and other languages
+- **Documentation-based**: Using package documentation
+- **Paper implementation**: Converting research to code
+
+### Dataset Exploration
+- **Dataset discovery**: Finding relevant datasets
+- **Metadata analysis**: Understanding dataset structure
+- **Integration guidance**: How to use datasets with code
+
+### Interactive Conversations
+- **Multi-turn discussions**: Extended research conversations
+- **Tool execution**: Real-time tool calling and results
+- **Conversation memory**: Maintaining context across turns
+- **Streaming responses**: Real-time agent responses
+
+## RL Component (Future)
 
 ### Training Infrastructure
 - **Algorithm**: PPO
@@ -82,73 +129,76 @@
 - **Code Quality**:
   - Syntax correctness
   - Runtime performance
-  - Memory usage
-  - Code style adherence
-- **Execution Success**:
-  - Output validation
-  - Error handling
-  - Resource usage
-- **User Feedback**:
-  - Thumbs up/down
-  - Code reuse metrics
-  - Implementation accuracy
+  - Documentation quality
+- **User Satisfaction**:
+  - Conversation quality
+  - Tool execution success
+  - Response relevance
+- **Research Impact**:
+  - Paper relevance
+  - Citation accuracy
+  - Implementation fidelity
 
-## Code Execution Environment
+## Deployment & Infrastructure
 
-### Sandbox Components
-- **Docker Containers**:
-  - R environment (tidyverse, BioConductor)
-  - Python environment (scipy, sklearn)
-  - Resource limits
-  - Network isolation
-- **Execution Pipeline**:
-  - Code validation
-  - Dependency resolution
-  - Output capture
-  - Error handling
+### Development
+- **Local Development**: Docker Compose
+- **Hot Reloading**: FastAPI + Next.js
+- **Environment Management**: Python venv + Node.js
 
-### Security Measures
-- **Resource Limits**:
-  - CPU/Memory caps
-  - Execution timeouts
-  - Storage limits
-- **Network Controls**:
-  - Allowlist for package repos
-  - No external network access
-- **Code Scanning**:
-  - Static analysis
-  - Vulnerability checks
-  - Malware detection
+### Production
+- **Backend**: Docker containers on cloud platform
+- **Frontend**: Static export to CDN
+- **Database**: Supabase managed PostgreSQL
+- **Agent Services**: Containerized MCP server
+- **Monitoring**: Application performance monitoring
 
-## CI/CD
+### CI/CD
+- **GitHub Actions**: Automated testing and deployment
+- **Code Quality**: ESLint, TypeScript, Python linting
+- **Testing**: Unit tests, integration tests, agent workflow tests
+- **Deployment**: Automated deployment to staging/production
 
-- **GitHub Actions**
-  - Frontend: ESLint, Jest
-  - Backend: Black, flake8, pytest
-  - Container security scans
-  - Build Docker images
-  - Deploy to Hugging Face Spaces
+## Security & Privacy
 
-## Monitoring & Analytics
+### Authentication
+- **Supabase Auth**: JWT-based authentication
+- **Role-based access**: User permissions and roles
+- **API Security**: Rate limiting and request validation
 
-- **Performance**:
-  - Code execution metrics
-  - Model inference times
-  - Resource utilization
-- **Quality**:
-  - Code generation success rates
-  - User satisfaction metrics
-  - RL model convergence
-- **Security**:
-  - Sandbox breach attempts
-  - Resource abuse detection
-  - Code scan results
+### Data Privacy
+- **Conversation encryption**: End-to-end message encryption
+- **Tool execution isolation**: Sandboxed tool execution
+- **Data retention**: Configurable conversation history
+- **GDPR compliance**: Data deletion and export capabilities
 
-## Deployment
+## Performance & Scalability
 
-- Hugging Face Spaces (Docker)
-- Frontend + backend served together
-- Supabase hosted externally
-- Gemini API provides LLM functionality
-- Distributed training on HPC/cloud
-- Sandbox environments in isolated VPC
+### Caching
+- **Redis**: Session and conversation caching
+- **CDN**: Static asset delivery
+- **Database**: Query result caching
+
+### Scaling
+- **Horizontal scaling**: Multiple backend instances
+- **Load balancing**: Traffic distribution
+- **Database scaling**: Read replicas and connection pooling
+- **Agent scaling**: Multiple agent instances with load balancing
+
+## Monitoring & Observability
+
+### Logging
+- **Structured logging**: JSON-formatted logs
+- **Log aggregation**: Centralized log management
+- **Error tracking**: Automated error reporting
+
+### Metrics
+- **Application metrics**: Response times, error rates
+- **Agent metrics**: Tool execution success rates
+- **User metrics**: Conversation quality and satisfaction
+- **Business metrics**: Usage patterns and feature adoption
+
+### Alerting
+- **Performance alerts**: Response time thresholds
+- **Error alerts**: Error rate monitoring
+- **Availability alerts**: Service health monitoring
