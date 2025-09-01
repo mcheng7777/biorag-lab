@@ -25,7 +25,30 @@
 - [x] Create initial API endpoints
 - [x] Set up development environment
 
-### Docker Setup _(Paused)_
+### Backend Development _(Next Priority)_
+- [ ] Implement core API endpoints
+  - [ ] Search papers endpoint (`/papers/search`)
+  - [ ] Search datasets endpoint (`/datasets/search`)
+  - [ ] Generate code endpoint (`/generate_code`)
+  - [ ] Health check with service status
+- [ ] Add proper error handling and logging
+  - [ ] Global exception handlers
+  - [ ] Structured logging with structlog
+  - [ ] Request/response logging
+- [ ] Implement API documentation
+  - [ ] Enhanced OpenAPI documentation
+  - [ ] Example requests and responses
+  - [ ] API versioning strategy
+- [ ] Add input validation and models
+  - [ ] Pydantic models for requests/responses
+  - [ ] Input validation and sanitization
+  - [ ] Response serialization
+- [ ] Test backend functionality locally
+  - [ ] Unit tests for endpoints
+  - [ ] Integration tests
+  - [ ] API contract tests
+
+### Docker Setup _(After Backend Development)_
 - [x] Create development Dockerfile
 - [x] Create production Dockerfile
 - [x] Set up docker-compose
