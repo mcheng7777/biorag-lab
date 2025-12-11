@@ -64,17 +64,20 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 # Navigate to backend directory
 cd backend
 
+# clone paper search mcp
+git clone https://github.com/openags/paper-search-mcp.git
 # Create virtual environment
-uv venv
+uv init --python=3.12
 
-# Activate virtual environment
-source .venv/bin/activate
 ```
 
 #### 3. Install Backend Dependencies
 ```bash
 # Install dependencies using uv
-uv pip install -r requirements.txt
+uv add paper-search-mcp
+# This will create a .venv file. Activate the virtual environment and install other dependencies
+source .venv/bin/activate
+uv add -r requirements.txt
 ```
 
 Current backend dependencies (as of GPT-OSS integration):
@@ -84,7 +87,7 @@ Core Dependencies:
 - PyTorch 2.8.0
 - Transformers 4.56.0
 - FastAPI 0.116.1
-- Pydantic & pydantic-settings
+- PydanticAI & pydantic-settings
 - structlog (for structured logging)
 
 Model & Training:

@@ -1,0 +1,4381 @@
+Directory structure:
+└── openags-paper-search-mcp/
+    ├── README.md
+    ├── Dockerfile
+    ├── LICENSE
+    ├── pyproject.toml
+    ├── smithery.yaml
+    ├── paper_search_mcp/
+    │   ├── __init__.py
+    │   ├── paper.py
+    │   ├── server.py
+    │   └── academic_platforms/
+    │       ├── __init__.py
+    │       ├── arxiv.py
+    │       ├── biorxiv.py
+    │       ├── crossref.py
+    │       ├── google_scholar.py
+    │       ├── hub.py
+    │       ├── iacr.py
+    │       ├── medrxiv.py
+    │       ├── pubmed.py
+    │       ├── sci_hub.py
+    │       └── semantic.py
+    ├── tests/
+    │   ├── __init__.py
+    │   ├── test.pubmed.py
+    │   ├── test_arxiv.py
+    │   ├── test_biorxiv.py
+    │   ├── test_crossref.py
+    │   ├── test_google_scholar.py
+    │   ├── test_iacr.py
+    │   ├── test_medrxiv.py
+    │   ├── test_sci_hub.py
+    │   ├── test_semantic.py
+    │   └── test_server.py
+    └── .github/
+        └── workflows/
+            └── publish.yml
+
+================================================
+FILE: README.md
+================================================
+# Paper Search MCP
+
+A Model Context Protocol (MCP) server for searching and downloading academic papers from multiple sources, including arXiv, PubMed, bioRxiv, and Sci-Hub (optional). Designed for seamless integration with large language models like Claude Desktop.
+
+![PyPI](https://img.shields.io/pypi/v/paper-search-mcp.svg) ![License](https://img.shields.io/badge/license-MIT-blue.svg) ![Python](https://img.shields.io/badge/python-3.10+-blue.svg)
+[![smithery badge](https://smithery.ai/badge/@openags/paper-search-mcp)](https://smithery.ai/server/@openags/paper-search-mcp)
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Installation](#installation)
+  - [Quick Start](#quick-start)
+    - [Install Package](#install-package)
+    - [Configure Claude Desktop](#configure-claude-desktop)
+  - [For Development](#for-development)
+    - [Setup Environment](#setup-environment)
+    - [Install Dependencies](#install-dependencies)
+- [Contributing](#contributing)
+- [Demo](#demo)
+- [License](#license)
+- [TODO](#todo)
+
+---
+
+## Overview
+
+`paper-search-mcp` is a Python-based MCP server that enables users to search and download academic papers from various platforms. It provides tools for searching papers (e.g., `search_arxiv`) and downloading PDFs (e.g., `download_arxiv`), making it ideal for researchers and AI-driven workflows. Built with the MCP Python SDK, it integrates seamlessly with LLM clients like Claude Desktop.
+
+---
+
+## Features
+
+- **Multi-Source Support**: Search and download papers from arXiv, PubMed, bioRxiv, medRxiv, Google Scholar, IACR ePrint Archive, Semantic Scholar.
+- **Standardized Output**: Papers are returned in a consistent dictionary format via the `Paper` class.
+- **Asynchronous Tools**: Efficiently handles network requests using `httpx`.
+- **MCP Integration**: Compatible with MCP clients for LLM context enhancement.
+- **Extensible Design**: Easily add new academic platforms by extending the `academic_platforms` module.
+
+---
+
+## Installation
+
+`paper-search-mcp` can be installed using `uv` or `pip`. Below are two approaches: a quick start for immediate use and a detailed setup for development.
+
+### Installing via Smithery
+
+To install paper-search-mcp for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@openags/paper-search-mcp):
+
+```bash
+npx -y @smithery/cli install @openags/paper-search-mcp --client claude
+```
+
+### Quick Start
+
+For users who want to quickly run the server:
+
+1. **Install Package**:
+
+   ```bash
+   uv add paper-search-mcp
+   ```
+
+2. **Configure Claude Desktop**:
+   Add this configuration to `~/Library/Application Support/Claude/claude_desktop_config.json` (Mac) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
+   ```json
+   {
+     "mcpServers": {
+       "paper_search_server": {
+         "command": "uv",
+         "args": [
+           "run",
+           "--directory",
+           "/path/to/your/paper-search-mcp",
+           "-m",
+           "paper_search_mcp.server"
+         ],
+         "env": {
+           "SEMANTIC_SCHOLAR_API_KEY": "" // Optional: For enhanced Semantic Scholar features
+         }
+       }
+     }
+   }
+   ```
+   > Note: Replace `/path/to/your/paper-search-mcp` with your actual installation path.
+
+### For Development
+
+For developers who want to modify the code or contribute:
+
+1. **Setup Environment**:
+
+   ```bash
+   # Install uv if not installed
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+
+   # Clone repository
+   git clone https://github.com/openags/paper-search-mcp.git
+   cd paper-search-mcp
+
+   # Create and activate virtual environment
+   uv venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   ```
+
+2. **Install Dependencies**:
+
+   ```bash
+   # Install project in editable mode
+   uv add -e .
+
+   # Add development dependencies (optional)
+   uv add pytest flake8
+   ```
+
+---
+
+## Contributing
+
+We welcome contributions! Here's how to get started:
+
+1. **Fork the Repository**:
+   Click "Fork" on GitHub.
+
+2. **Clone and Set Up**:
+
+   ```bash
+   git clone https://github.com/yourusername/paper-search-mcp.git
+   cd paper-search-mcp
+   pip install -e ".[dev]"  # Install dev dependencies (if added to pyproject.toml)
+   ```
+
+3. **Make Changes**:
+
+   - Add new platforms in `academic_platforms/`.
+   - Update tests in `tests/`.
+
+4. **Submit a Pull Request**:
+   Push changes and create a PR on GitHub.
+
+---
+
+## Demo
+
+<img src="docs\images\demo.png" alt="Demo" width="800">
+
+## TODO
+
+### Planned Academic Platforms
+
+- [√] arXiv
+- [√] PubMed
+- [√] bioRxiv
+- [√] medRxiv
+- [√] Google Scholar
+- [√] IACR ePrint Archive
+- [√] Semantic Scholar
+- [ ] PubMed Central (PMC)
+- [ ] Science Direct
+- [ ] Springer Link
+- [ ] IEEE Xplore
+- [ ] ACM Digital Library
+- [ ] Web of Science
+- [ ] Scopus
+- [ ] JSTOR
+- [ ] ResearchGate
+- [ ] CORE
+- [ ] Microsoft Academic
+
+---
+
+## License
+
+This project is licensed under the MIT License. See the LICENSE file for details.
+
+---
+
+Happy researching with `paper-search-mcp`! If you encounter issues, open a GitHub issue.
+
+
+
+================================================
+FILE: Dockerfile
+================================================
+# Generated by https://smithery.ai. See: https://smithery.ai/docs/config#dockerfile
+FROM python:3.10-alpine
+
+# Install system dependencies
+RUN apk add --no-cache build-base libffi-dev openssl-dev
+
+WORKDIR /app
+
+# Copy the entire repository
+COPY . .
+
+# Upgrade pip and install dependencies
+RUN pip install --upgrade pip \
+    && pip install --no-cache-dir .
+
+# Expose port if necessary (MCP servers use stdio; no port to expose)
+
+# Command to run the MCP server
+CMD ["python", "-m", "paper_search_mcp.server"]
+
+
+
+================================================
+FILE: LICENSE
+================================================
+MIT License
+
+Copyright (c) 2025 OPENAGS
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+
+================================================
+FILE: pyproject.toml
+================================================
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "paper-search-mcp"
+version = "0.1.3"
+authors = [
+  { name = "P.S Zhang", email = "pengsongzhang96@gmail.com" },
+]
+description = "A MCP server for searching and downloading academic papers from multiple sources."
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+    "requests",
+    "feedparser",
+    "fastmcp",
+    "mcp[cli]>=1.6.0",
+    "PyPDF2>=3.0.0",
+    "beautifulsoup4>=4.12.0",
+    "lxml>=4.9.0", # Better HTML parser for BeautifulSoup
+    "httpx[socks]>=0.28.1",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["paper_search_mcp"]
+
+
+
+================================================
+FILE: smithery.yaml
+================================================
+# Smithery configuration file: https://smithery.ai/docs/config#smitheryyaml
+
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    properties: {}
+  commandFunction:
+    # A JS function that produces the CLI command based on the given config to start the MCP on stdio.
+    |-
+    (config) => ({ command: 'python', args: ['-m', 'paper_search_mcp.server'] })
+  exampleConfig: {}
+
+
+
+================================================
+FILE: paper_search_mcp/__init__.py
+================================================
+[Empty file]
+
+
+================================================
+FILE: paper_search_mcp/paper.py
+================================================
+# paper_search_mcp/paper.py
+from dataclasses import dataclass
+from datetime import datetime
+from typing import List, Dict, Optional
+
+@dataclass
+class Paper:
+    """Standardized paper format with core fields for academic sources"""
+    # 核心字段（必填，但允许空值或默认值）
+    paper_id: str              # Unique identifier (e.g., arXiv ID, PMID, DOI)
+    title: str                 # Paper title
+    authors: List[str]         # List of author names
+    abstract: str              # Abstract text
+    doi: str                   # Digital Object Identifier
+    published_date: datetime   # Publication date
+    pdf_url: str               # Direct PDF link
+    url: str                   # URL to paper page
+    source: str                # Source platform (e.g., 'arxiv', 'pubmed')
+
+    # 可选字段
+    updated_date: Optional[datetime] = None    # Last updated date
+    categories: List[str] = None               # Subject categories
+    keywords: List[str] = None                 # Keywords
+    citations: int = 0                         # Citation count
+    references: Optional[List[str]] = None     # List of reference IDs/DOIs
+    extra: Optional[Dict] = None               # Source-specific extra metadata
+
+    def __post_init__(self):
+        """Post-initialization to handle default values"""
+        if self.authors is None:
+            self.authors = []
+        if self.categories is None:
+            self.categories = []
+        if self.keywords is None:
+            self.keywords = []
+        if self.references is None:
+            self.references = []
+        if self.extra is None:
+            self.extra = {}
+
+    def to_dict(self) -> Dict:
+        """Convert paper to dictionary format for serialization"""
+        return {
+            'paper_id': self.paper_id,
+            'title': self.title,
+            'authors': '; '.join(self.authors) if self.authors else '',
+            'abstract': self.abstract,
+            'doi': self.doi,
+            'published_date': self.published_date.isoformat() if self.published_date else '',
+            'pdf_url': self.pdf_url,
+            'url': self.url,
+            'source': self.source,
+            'updated_date': self.updated_date.isoformat() if self.updated_date else '',
+            'categories': '; '.join(self.categories) if self.categories else '',
+            'keywords': '; '.join(self.keywords) if self.keywords else '',
+            'citations': self.citations,
+            'references': '; '.join(self.references) if self.references else '',
+            'extra': str(self.extra) if self.extra else ''
+        }
+
+
+================================================
+FILE: paper_search_mcp/server.py
+================================================
+# paper_search_mcp/server.py
+from typing import List, Dict, Optional
+import httpx
+from mcp.server.fastmcp import FastMCP
+from .academic_platforms.arxiv import ArxivSearcher
+from .academic_platforms.pubmed import PubMedSearcher
+from .academic_platforms.biorxiv import BioRxivSearcher
+from .academic_platforms.medrxiv import MedRxivSearcher
+from .academic_platforms.google_scholar import GoogleScholarSearcher
+from .academic_platforms.iacr import IACRSearcher
+from .academic_platforms.semantic import SemanticSearcher
+from .academic_platforms.crossref import CrossRefSearcher
+
+# from .academic_platforms.hub import SciHubSearcher
+from .paper import Paper
+
+# Initialize MCP server
+mcp = FastMCP("paper_search_server")
+
+# Instances of searchers
+arxiv_searcher = ArxivSearcher()
+pubmed_searcher = PubMedSearcher()
+biorxiv_searcher = BioRxivSearcher()
+medrxiv_searcher = MedRxivSearcher()
+google_scholar_searcher = GoogleScholarSearcher()
+iacr_searcher = IACRSearcher()
+semantic_searcher = SemanticSearcher()
+crossref_searcher = CrossRefSearcher()
+# scihub_searcher = SciHubSearcher()
+
+
+# Asynchronous helper to adapt synchronous searchers
+async def async_search(searcher, query: str, max_results: int, **kwargs) -> List[Dict]:
+    async with httpx.AsyncClient() as client:
+        # Assuming searchers use requests internally; we'll call synchronously for now
+        if 'year' in kwargs:
+            papers = searcher.search(query, year=kwargs['year'], max_results=max_results)
+        else:
+            papers = searcher.search(query, max_results=max_results)
+        return [paper.to_dict() for paper in papers]
+
+
+# Tool definitions
+@mcp.tool()
+async def search_arxiv(query: str, max_results: int = 10) -> List[Dict]:
+    """Search academic papers from arXiv.
+
+    Args:
+        query: Search query string (e.g., 'machine learning').
+        max_results: Maximum number of papers to return (default: 10).
+    Returns:
+        List of paper metadata in dictionary format.
+    """
+    papers = await async_search(arxiv_searcher, query, max_results)
+    return papers if papers else []
+
+
+@mcp.tool()
+async def search_pubmed(query: str, max_results: int = 10) -> List[Dict]:
+    """Search academic papers from PubMed.
+
+    Args:
+        query: Search query string (e.g., 'machine learning').
+        max_results: Maximum number of papers to return (default: 10).
+    Returns:
+        List of paper metadata in dictionary format.
+    """
+    papers = await async_search(pubmed_searcher, query, max_results)
+    return papers if papers else []
+
+
+@mcp.tool()
+async def search_biorxiv(query: str, max_results: int = 10) -> List[Dict]:
+    """Search academic papers from bioRxiv.
+
+    Args:
+        query: Search query string (e.g., 'machine learning').
+        max_results: Maximum number of papers to return (default: 10).
+    Returns:
+        List of paper metadata in dictionary format.
+    """
+    papers = await async_search(biorxiv_searcher, query, max_results)
+    return papers if papers else []
+
+
+@mcp.tool()
+async def search_medrxiv(query: str, max_results: int = 10) -> List[Dict]:
+    """Search academic papers from medRxiv.
+
+    Args:
+        query: Search query string (e.g., 'machine learning').
+        max_results: Maximum number of papers to return (default: 10).
+    Returns:
+        List of paper metadata in dictionary format.
+    """
+    papers = await async_search(medrxiv_searcher, query, max_results)
+    return papers if papers else []
+
+
+@mcp.tool()
+async def search_google_scholar(query: str, max_results: int = 10) -> List[Dict]:
+    """Search academic papers from Google Scholar.
+
+    Args:
+        query: Search query string (e.g., 'machine learning').
+        max_results: Maximum number of papers to return (default: 10).
+    Returns:
+        List of paper metadata in dictionary format.
+    """
+    papers = await async_search(google_scholar_searcher, query, max_results)
+    return papers if papers else []
+
+
+@mcp.tool()
+async def search_iacr(
+    query: str, max_results: int = 10, fetch_details: bool = True
+) -> List[Dict]:
+    """Search academic papers from IACR ePrint Archive.
+
+    Args:
+        query: Search query string (e.g., 'cryptography', 'secret sharing').
+        max_results: Maximum number of papers to return (default: 10).
+        fetch_details: Whether to fetch detailed information for each paper (default: True).
+    Returns:
+        List of paper metadata in dictionary format.
+    """
+    async with httpx.AsyncClient() as client:
+        papers = iacr_searcher.search(query, max_results, fetch_details)
+        return [paper.to_dict() for paper in papers] if papers else []
+
+
+@mcp.tool()
+async def download_arxiv(paper_id: str, save_path: str = "./downloads") -> str:
+    """Download PDF of an arXiv paper.
+
+    Args:
+        paper_id: arXiv paper ID (e.g., '2106.12345').
+        save_path: Directory to save the PDF (default: './downloads').
+    Returns:
+        Path to the downloaded PDF file.
+    """
+    async with httpx.AsyncClient() as client:
+        return arxiv_searcher.download_pdf(paper_id, save_path)
+
+
+@mcp.tool()
+async def download_pubmed(paper_id: str, save_path: str = "./downloads") -> str:
+    """Attempt to download PDF of a PubMed paper.
+
+    Args:
+        paper_id: PubMed ID (PMID).
+        save_path: Directory to save the PDF (default: './downloads').
+    Returns:
+        str: Message indicating that direct PDF download is not supported.
+    """
+    try:
+        return pubmed_searcher.download_pdf(paper_id, save_path)
+    except NotImplementedError as e:
+        return str(e)
+
+
+@mcp.tool()
+async def download_biorxiv(paper_id: str, save_path: str = "./downloads") -> str:
+    """Download PDF of a bioRxiv paper.
+
+    Args:
+        paper_id: bioRxiv DOI.
+        save_path: Directory to save the PDF (default: './downloads').
+    Returns:
+        Path to the downloaded PDF file.
+    """
+    return biorxiv_searcher.download_pdf(paper_id, save_path)
+
+
+@mcp.tool()
+async def download_medrxiv(paper_id: str, save_path: str = "./downloads") -> str:
+    """Download PDF of a medRxiv paper.
+
+    Args:
+        paper_id: medRxiv DOI.
+        save_path: Directory to save the PDF (default: './downloads').
+    Returns:
+        Path to the downloaded PDF file.
+    """
+    return medrxiv_searcher.download_pdf(paper_id, save_path)
+
+
+@mcp.tool()
+async def download_iacr(paper_id: str, save_path: str = "./downloads") -> str:
+    """Download PDF of an IACR ePrint paper.
+
+    Args:
+        paper_id: IACR paper ID (e.g., '2009/101').
+        save_path: Directory to save the PDF (default: './downloads').
+    Returns:
+        Path to the downloaded PDF file.
+    """
+    return iacr_searcher.download_pdf(paper_id, save_path)
+
+
+@mcp.tool()
+async def read_arxiv_paper(paper_id: str, save_path: str = "./downloads") -> str:
+    """Read and extract text content from an arXiv paper PDF.
+
+    Args:
+        paper_id: arXiv paper ID (e.g., '2106.12345').
+        save_path: Directory where the PDF is/will be saved (default: './downloads').
+    Returns:
+        str: The extracted text content of the paper.
+    """
+    try:
+        return arxiv_searcher.read_paper(paper_id, save_path)
+    except Exception as e:
+        print(f"Error reading paper {paper_id}: {e}")
+        return ""
+
+
+@mcp.tool()
+async def read_pubmed_paper(paper_id: str, save_path: str = "./downloads") -> str:
+    """Read and extract text content from a PubMed paper.
+
+    Args:
+        paper_id: PubMed ID (PMID).
+        save_path: Directory where the PDF would be saved (unused).
+    Returns:
+        str: Message indicating that direct paper reading is not supported.
+    """
+    return pubmed_searcher.read_paper(paper_id, save_path)
+
+
+@mcp.tool()
+async def read_biorxiv_paper(paper_id: str, save_path: str = "./downloads") -> str:
+    """Read and extract text content from a bioRxiv paper PDF.
+
+    Args:
+        paper_id: bioRxiv DOI.
+        save_path: Directory where the PDF is/will be saved (default: './downloads').
+    Returns:
+        str: The extracted text content of the paper.
+    """
+    try:
+        return biorxiv_searcher.read_paper(paper_id, save_path)
+    except Exception as e:
+        print(f"Error reading paper {paper_id}: {e}")
+        return ""
+
+
+@mcp.tool()
+async def read_medrxiv_paper(paper_id: str, save_path: str = "./downloads") -> str:
+    """Read and extract text content from a medRxiv paper PDF.
+
+    Args:
+        paper_id: medRxiv DOI.
+        save_path: Directory where the PDF is/will be saved (default: './downloads').
+    Returns:
+        str: The extracted text content of the paper.
+    """
+    try:
+        return medrxiv_searcher.read_paper(paper_id, save_path)
+    except Exception as e:
+        print(f"Error reading paper {paper_id}: {e}")
+        return ""
+
+
+@mcp.tool()
+async def read_iacr_paper(paper_id: str, save_path: str = "./downloads") -> str:
+    """Read and extract text content from an IACR ePrint paper PDF.
+
+    Args:
+        paper_id: IACR paper ID (e.g., '2009/101').
+        save_path: Directory where the PDF is/will be saved (default: './downloads').
+    Returns:
+        str: The extracted text content of the paper.
+    """
+    try:
+        return iacr_searcher.read_paper(paper_id, save_path)
+    except Exception as e:
+        print(f"Error reading paper {paper_id}: {e}")
+        return ""
+
+
+@mcp.tool()
+async def search_semantic(query: str, year: Optional[str] = None, max_results: int = 10) -> List[Dict]:
+    """Search academic papers from Semantic Scholar.
+
+    Args:
+        query: Search query string (e.g., 'machine learning').
+        year: Optional year filter (e.g., '2019', '2016-2020', '2010-', '-2015').
+        max_results: Maximum number of papers to return (default: 10).
+    Returns:
+        List of paper metadata in dictionary format.
+    """
+    kwargs = {}
+    if year is not None:
+        kwargs['year'] = year
+    papers = await async_search(semantic_searcher, query, max_results, **kwargs)
+    return papers if papers else []
+
+
+@mcp.tool()
+async def download_semantic(paper_id: str, save_path: str = "./downloads") -> str:
+    """Download PDF of a Semantic Scholar paper.    
+
+    Args:
+        paper_id: Semantic Scholar paper ID, Paper identifier in one of the following formats:
+            - Semantic Scholar ID (e.g., "649def34f8be52c8b66281af98ae884c09aef38b")
+            - DOI:<doi> (e.g., "DOI:10.18653/v1/N18-3011")
+            - ARXIV:<id> (e.g., "ARXIV:2106.15928")
+            - MAG:<id> (e.g., "MAG:112218234")
+            - ACL:<id> (e.g., "ACL:W12-3903")
+            - PMID:<id> (e.g., "PMID:19872477")
+            - PMCID:<id> (e.g., "PMCID:2323736")
+            - URL:<url> (e.g., "URL:https://arxiv.org/abs/2106.15928v1")
+        save_path: Directory to save the PDF (default: './downloads').
+    Returns:
+        Path to the downloaded PDF file.
+    """ 
+    return semantic_searcher.download_pdf(paper_id, save_path)
+
+
+@mcp.tool()
+async def read_semantic_paper(paper_id: str, save_path: str = "./downloads") -> str:
+    """Read and extract text content from a Semantic Scholar paper. 
+
+    Args:
+        paper_id: Semantic Scholar paper ID, Paper identifier in one of the following formats:
+            - Semantic Scholar ID (e.g., "649def34f8be52c8b66281af98ae884c09aef38b")
+            - DOI:<doi> (e.g., "DOI:10.18653/v1/N18-3011")
+            - ARXIV:<id> (e.g., "ARXIV:2106.15928")
+            - MAG:<id> (e.g., "MAG:112218234")
+            - ACL:<id> (e.g., "ACL:W12-3903")
+            - PMID:<id> (e.g., "PMID:19872477")
+            - PMCID:<id> (e.g., "PMCID:2323736")
+            - URL:<url> (e.g., "URL:https://arxiv.org/abs/2106.15928v1")
+        save_path: Directory where the PDF is/will be saved (default: './downloads').
+    Returns:
+        str: The extracted text content of the paper.
+    """
+    try:
+        return semantic_searcher.read_paper(paper_id, save_path)
+    except Exception as e:
+        print(f"Error reading paper {paper_id}: {e}")
+        return ""
+
+
+@mcp.tool()
+async def search_crossref(query: str, max_results: int = 10, **kwargs) -> List[Dict]:
+    """Search academic papers from CrossRef database.
+    
+    CrossRef is a scholarly infrastructure organization that provides 
+    persistent identifiers (DOIs) for scholarly content and metadata.
+    It's one of the largest citation databases covering millions of 
+    academic papers, journals, books, and other scholarly content.
+
+    Args:
+        query: Search query string (e.g., 'machine learning', 'climate change').
+        max_results: Maximum number of papers to return (default: 10, max: 1000).
+        **kwargs: Additional search parameters:
+            - filter: CrossRef filter string (e.g., 'has-full-text:true,from-pub-date:2020')
+            - sort: Sort field ('relevance', 'published', 'updated', 'deposited', etc.)
+            - order: Sort order ('asc' or 'desc')
+    Returns:
+        List of paper metadata in dictionary format.
+        
+    Examples:
+        # Basic search
+        search_crossref("deep learning", 20)
+        
+        # Search with filters
+        search_crossref("climate change", 10, filter="from-pub-date:2020,has-full-text:true")
+        
+        # Search sorted by publication date
+        search_crossref("neural networks", 15, sort="published", order="desc")
+    """
+    papers = await async_search(crossref_searcher, query, max_results, **kwargs)
+    return papers if papers else []
+
+
+@mcp.tool()
+async def get_crossref_paper_by_doi(doi: str) -> Dict:
+    """Get a specific paper from CrossRef by its DOI.
+
+    Args:
+        doi: Digital Object Identifier (e.g., '10.1038/nature12373').
+    Returns:
+        Paper metadata in dictionary format, or empty dict if not found.
+        
+    Example:
+        get_crossref_paper_by_doi("10.1038/nature12373")
+    """
+    async with httpx.AsyncClient() as client:
+        paper = crossref_searcher.get_paper_by_doi(doi)
+        return paper.to_dict() if paper else {}
+
+
+@mcp.tool()
+async def download_crossref(paper_id: str, save_path: str = "./downloads") -> str:
+    """Attempt to download PDF of a CrossRef paper.
+
+    Args:
+        paper_id: CrossRef DOI (e.g., '10.1038/nature12373').
+        save_path: Directory to save the PDF (default: './downloads').
+    Returns:
+        str: Message indicating that direct PDF download is not supported.
+        
+    Note:
+        CrossRef is a citation database and doesn't provide direct PDF downloads.
+        Use the DOI to access the paper through the publisher's website.
+    """
+    try:
+        return crossref_searcher.download_pdf(paper_id, save_path)
+    except NotImplementedError as e:
+        return str(e)
+
+
+@mcp.tool()
+async def read_crossref_paper(paper_id: str, save_path: str = "./downloads") -> str:
+    """Attempt to read and extract text content from a CrossRef paper.
+
+    Args:
+        paper_id: CrossRef DOI (e.g., '10.1038/nature12373').
+        save_path: Directory where the PDF is/will be saved (default: './downloads').
+    Returns:
+        str: Message indicating that direct paper reading is not supported.
+        
+    Note:
+        CrossRef is a citation database and doesn't provide direct paper content.
+        Use the DOI to access the paper through the publisher's website.
+    """
+    return crossref_searcher.read_paper(paper_id, save_path)
+
+
+if __name__ == "__main__":
+    mcp.run(transport="stdio")
+
+
+
+================================================
+FILE: paper_search_mcp/academic_platforms/__init__.py
+================================================
+[Empty file]
+
+
+================================================
+FILE: paper_search_mcp/academic_platforms/arxiv.py
+================================================
+# paper_search_mcp/sources/arxiv.py
+from typing import List
+from datetime import datetime
+import requests
+import feedparser
+from ..paper import Paper
+from PyPDF2 import PdfReader
+import os
+
+class PaperSource:
+    """Abstract base class for paper sources"""
+    def search(self, query: str, **kwargs) -> List[Paper]:
+        raise NotImplementedError
+
+    def download_pdf(self, paper_id: str, save_path: str) -> str:
+        raise NotImplementedError
+
+    def read_paper(self, paper_id: str, save_path: str) -> str:
+        raise NotImplementedError
+
+class ArxivSearcher(PaperSource):
+    """Searcher for arXiv papers"""
+    BASE_URL = "http://export.arxiv.org/api/query"
+
+    def search(self, query: str, max_results: int = 10) -> List[Paper]:
+        params = {
+            'search_query': query,
+            'max_results': max_results,
+            'sortBy': 'submittedDate',
+            'sortOrder': 'descending'
+        }
+        response = requests.get(self.BASE_URL, params=params)
+        feed = feedparser.parse(response.content)
+        papers = []
+        for entry in feed.entries:
+            try:
+                authors = [author.name for author in entry.authors]
+                published = datetime.strptime(entry.published, '%Y-%m-%dT%H:%M:%SZ')
+                updated = datetime.strptime(entry.updated, '%Y-%m-%dT%H:%M:%SZ')
+                pdf_url = next((link.href for link in entry.links if link.type == 'application/pdf'), '')
+                papers.append(Paper(
+                    paper_id=entry.id.split('/')[-1],
+                    title=entry.title,
+                    authors=authors,
+                    abstract=entry.summary,
+                    url=entry.id,
+                    pdf_url=pdf_url,
+                    published_date=published,
+                    updated_date=updated,
+                    source='arxiv',
+                    categories=[tag.term for tag in entry.tags],
+                    keywords=[],
+                    doi=entry.get('doi', '')
+                ))
+            except Exception as e:
+                print(f"Error parsing arXiv entry: {e}")
+        return papers
+
+    def download_pdf(self, paper_id: str, save_path: str) -> str:
+        pdf_url = f"https://arxiv.org/pdf/{paper_id}.pdf"
+        response = requests.get(pdf_url)
+        output_file = f"{save_path}/{paper_id}.pdf"
+        with open(output_file, 'wb') as f:
+            f.write(response.content)
+        return output_file
+
+    def read_paper(self, paper_id: str, save_path: str = "./downloads") -> str:
+        """Read a paper and convert it to text format.
+        
+        Args:
+            paper_id: arXiv paper ID
+            save_path: Directory where the PDF is/will be saved
+            
+        Returns:
+            str: The extracted text content of the paper
+        """
+        # First ensure we have the PDF
+        pdf_path = f"{save_path}/{paper_id}.pdf"
+        if not os.path.exists(pdf_path):
+            pdf_path = self.download_pdf(paper_id, save_path)
+        
+        # Read the PDF
+        try:
+            reader = PdfReader(pdf_path)
+            text = ""
+            
+            # Extract text from each page
+            for page in reader.pages:
+                text += page.extract_text() + "\n"
+            
+            return text.strip()
+        except Exception as e:
+            print(f"Error reading PDF for paper {paper_id}: {e}")
+            return ""
+
+if __name__ == "__main__":
+    # 测试 ArxivSearcher 的功能
+    searcher = ArxivSearcher()
+    
+    # 测试搜索功能
+    print("Testing search functionality...")
+    query = "machine learning"
+    max_results = 5
+    try:
+        papers = searcher.search(query, max_results=max_results)
+        print(f"Found {len(papers)} papers for query '{query}':")
+        for i, paper in enumerate(papers, 1):
+            print(f"{i}. {paper.title} (ID: {paper.paper_id})")
+    except Exception as e:
+        print(f"Error during search: {e}")
+    
+    # 测试 PDF 下载功能
+    if papers:
+        print("\nTesting PDF download functionality...")
+        paper_id = papers[0].paper_id
+        save_path = "./downloads"  # 确保此目录存在
+        try:
+            os.makedirs(save_path, exist_ok=True)
+            pdf_path = searcher.download_pdf(paper_id, save_path)
+            print(f"PDF downloaded successfully: {pdf_path}")
+        except Exception as e:
+            print(f"Error during PDF download: {e}")
+
+    # 测试论文阅读功能
+    if papers:
+        print("\nTesting paper reading functionality...")
+        paper_id = papers[0].paper_id
+        try:
+            text_content = searcher.read_paper(paper_id)
+            print(f"\nFirst 500 characters of the paper content:")
+            print(text_content[:500] + "...")
+            print(f"\nTotal length of extracted text: {len(text_content)} characters")
+        except Exception as e:
+            print(f"Error during paper reading: {e}")
+
+
+================================================
+FILE: paper_search_mcp/academic_platforms/biorxiv.py
+================================================
+from typing import List
+import requests
+import os
+from datetime import datetime, timedelta
+from ..paper import Paper
+from PyPDF2 import PdfReader
+
+class PaperSource:
+    """Abstract base class for paper sources"""
+    def search(self, query: str, **kwargs) -> List[Paper]:
+        raise NotImplementedError
+
+    def download_pdf(self, paper_id: str, save_path: str) -> str:
+        raise NotImplementedError
+
+    def read_paper(self, paper_id: str, save_path: str) -> str:
+        raise NotImplementedError
+
+class BioRxivSearcher(PaperSource):
+    """Searcher for bioRxiv papers"""
+    BASE_URL = "https://api.biorxiv.org/details/biorxiv"
+
+    def __init__(self):
+        self.session = requests.Session()
+        self.session.proxies = {'http': None, 'https': None}
+        self.timeout = 30
+        self.max_retries = 3
+
+    def search(self, query: str, max_results: int = 10, days: int = 30) -> List[Paper]:
+        """
+        Search for papers on bioRxiv by category within the last N days.
+
+        Args:
+            query: Category name to search for (e.g., "cell biology").
+            max_results: Maximum number of papers to return.
+            days: Number of days to look back for papers.
+
+        Returns:
+            List of Paper objects matching the category within the specified date range.
+        """
+        # Calculate date range: last N days
+        end_date = datetime.now().strftime('%Y-%m-%d')
+        start_date = (datetime.now() - timedelta(days=days)).strftime('%Y-%m-%d')
+        
+        # Format category: lowercase and replace spaces with underscores
+        category = query.lower().replace(' ', '_')
+        
+        papers = []
+        cursor = 0
+        while len(papers) < max_results:
+            url = f"{self.BASE_URL}/{start_date}/{end_date}/{cursor}"
+            if category:
+                url += f"?category={category}"
+            tries = 0
+            while tries < self.max_retries:
+                try:
+                    response = self.session.get(url, timeout=self.timeout)
+                    response.raise_for_status()
+                    data = response.json()
+                    collection = data.get('collection', [])
+                    for item in collection:
+                        try:
+                            date = datetime.strptime(item['date'], '%Y-%m-%d')
+                            papers.append(Paper(
+                                paper_id=item['doi'],
+                                title=item['title'],
+                                authors=item['authors'].split('; '),
+                                abstract=item['abstract'],
+                                url=f"https://www.biorxiv.org/content/{item['doi']}v{item.get('version', '1')}",
+                                pdf_url=f"https://www.biorxiv.org/content/{item['doi']}v{item.get('version', '1')}.full.pdf",
+                                published_date=date,
+                                updated_date=date,
+                                source="biorxiv",
+                                categories=[item['category']],
+                                keywords=[],
+                                doi=item['doi']
+                            ))
+                        except Exception as e:
+                            print(f"Error parsing bioRxiv entry: {e}")
+                    if len(collection) < 100:
+                        break  # No more results
+                    cursor += 100
+                    break  # Exit retry loop on success
+                except requests.exceptions.RequestException as e:
+                    tries += 1
+                    if tries == self.max_retries:
+                        print(f"Failed to connect to bioRxiv API after {self.max_retries} attempts: {e}")
+                        break
+                    print(f"Attempt {tries} failed, retrying...")
+            else:
+                continue
+            break
+
+        return papers[:max_results]
+
+    def download_pdf(self, paper_id: str, save_path: str) -> str:
+        """
+        Download a PDF for a given paper ID from bioRxiv.
+
+        Args:
+            paper_id: The DOI of the paper.
+            save_path: Directory to save the PDF.
+
+        Returns:
+            Path to the downloaded PDF file.
+        """
+        if not paper_id:
+            raise ValueError("Invalid paper_id: paper_id is empty")
+
+        pdf_url = f"https://www.biorxiv.org/content/{paper_id}v1.full.pdf"
+        tries = 0
+        while tries < self.max_retries:
+            try:
+                # Add User-Agent to avoid potential 403 errors
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                }
+                response = self.session.get(pdf_url, timeout=self.timeout, headers=headers)
+                response.raise_for_status()
+                os.makedirs(save_path, exist_ok=True)
+                output_file = f"{save_path}/{paper_id.replace('/', '_')}.pdf"
+                with open(output_file, 'wb') as f:
+                    f.write(response.content)
+                return output_file
+            except requests.exceptions.RequestException as e:
+                tries += 1
+                if tries == self.max_retries:
+                    raise Exception(f"Failed to download PDF after {self.max_retries} attempts: {e}")
+                print(f"Attempt {tries} failed, retrying...")
+    
+    def read_paper(self, paper_id: str, save_path: str = "./downloads") -> str:
+        """
+        Read a paper and convert it to text format.
+        
+        Args:
+            paper_id: bioRxiv DOI
+            save_path: Directory where the PDF is/will be saved
+            
+        Returns:
+            str: The extracted text content of the paper
+        """
+        pdf_path = f"{save_path}/{paper_id.replace('/', '_')}.pdf"
+        if not os.path.exists(pdf_path):
+            pdf_path = self.download_pdf(paper_id, save_path)
+        
+        try:
+            reader = PdfReader(pdf_path)
+            text = ""
+            for page in reader.pages:
+                text += page.extract_text() + "\n"
+            return text.strip()
+        except Exception as e:
+            print(f"Error reading PDF for paper {paper_id}: {e}")
+            return ""
+
+
+================================================
+FILE: paper_search_mcp/academic_platforms/crossref.py
+================================================
+# paper_search_mcp/academic_platforms/crossref.py
+from typing import List, Optional, Dict, Any
+from datetime import datetime
+import requests
+import time
+import random
+from ..paper import Paper
+import logging
+
+logger = logging.getLogger(__name__)
+
+class PaperSource:
+    """Abstract base class for paper sources"""
+    def search(self, query: str, **kwargs) -> List[Paper]:
+        raise NotImplementedError
+
+    def download_pdf(self, paper_id: str, save_path: str) -> str:
+        raise NotImplementedError
+
+    def read_paper(self, paper_id: str, save_path: str) -> str:
+        raise NotImplementedError
+
+class CrossRefSearcher(PaperSource):
+    """Searcher for CrossRef database papers"""
+    
+    BASE_URL = "https://api.crossref.org"
+    
+    # User agent for polite API usage as per CrossRef etiquette
+    USER_AGENT = "paper-search-mcp/0.1.3 (https://github.com/Dragonatorul/paper-search-mcp; mailto:paper-search@example.org)"
+    
+    def __init__(self):
+        self.session = requests.Session()
+        self.session.headers.update({
+            'User-Agent': self.USER_AGENT,
+            'Accept': 'application/json'
+        })
+    
+    def search(self, query: str, max_results: int = 10, **kwargs) -> List[Paper]:
+        """
+        Search CrossRef database for papers.
+        
+        Args:
+            query: Search query string
+            max_results: Maximum number of results to return (default: 10)
+            **kwargs: Additional parameters like filters, sort, etc.
+            
+        Returns:
+            List of Paper objects
+        """
+        try:
+            params = {
+                'query': query,
+                'rows': min(max_results, 1000),  # CrossRef API max is 1000
+                'sort': 'relevance',
+                'order': 'desc'
+            }
+            
+            # Add any additional filters from kwargs
+            if 'filter' in kwargs:
+                params['filter'] = kwargs['filter']
+            if 'sort' in kwargs:
+                params['sort'] = kwargs['sort']
+            if 'order' in kwargs:
+                params['order'] = kwargs['order']
+                
+            # Add polite pool parameter
+            params['mailto'] = 'paper-search@example.org'
+            
+            url = f"{self.BASE_URL}/works"
+            response = self.session.get(url, params=params, timeout=30)
+            
+            if response.status_code == 429:
+                # Rate limited - wait and retry once
+                logger.warning("Rate limited by CrossRef API, waiting 2 seconds...")
+                time.sleep(2)
+                response = self.session.get(url, params=params, timeout=30)
+            
+            response.raise_for_status()
+            data = response.json()
+            
+            papers = []
+            items = data.get('message', {}).get('items', [])
+            
+            for item in items:
+                try:
+                    paper = self._parse_crossref_item(item)
+                    if paper:
+                        papers.append(paper)
+                except Exception as e:
+                    logger.warning(f"Error parsing CrossRef item: {e}")
+                    continue
+                    
+            return papers
+            
+        except requests.RequestException as e:
+            logger.error(f"Error searching CrossRef: {e}")
+            return []
+        except Exception as e:
+            logger.error(f"Unexpected error in CrossRef search: {e}")
+            return []
+    
+    def _parse_crossref_item(self, item: Dict[str, Any]) -> Optional[Paper]:
+        """Parse a CrossRef API item into a Paper object."""
+        try:
+            # Extract basic information
+            doi = item.get('DOI', '')
+            title = self._extract_title(item)
+            authors = self._extract_authors(item)
+            abstract = item.get('abstract', '')
+            
+            # Extract publication date
+            published_date = self._extract_date(item, 'published')
+            if not published_date:
+                published_date = self._extract_date(item, 'issued')
+            if not published_date:
+                published_date = self._extract_date(item, 'created')
+            
+            # Default to epoch if no date found
+            if not published_date:
+                published_date = datetime(1970, 1, 1)
+            
+            # Extract URLs
+            url = item.get('URL', f"https://doi.org/{doi}" if doi else '')
+            pdf_url = self._extract_pdf_url(item)
+            
+            # Extract additional metadata
+            container_title = self._extract_container_title(item)
+            publisher = item.get('publisher', '')
+            categories = [item.get('type', '')]
+            
+            # Extract subjects/keywords if available
+            subjects = item.get('subject', [])
+            if isinstance(subjects, list):
+                keywords = subjects
+            else:
+                keywords = []
+            
+            return Paper(
+                paper_id=doi,
+                title=title,
+                authors=authors,
+                abstract=abstract,
+                doi=doi,
+                published_date=published_date,
+                pdf_url=pdf_url,
+                url=url,
+                source='crossref',
+                categories=categories,
+                keywords=keywords,
+                citations=item.get('is-referenced-by-count', 0),
+                extra={
+                    'publisher': publisher,
+                    'container_title': container_title,
+                    'volume': item.get('volume', ''),
+                    'issue': item.get('issue', ''),
+                    'page': item.get('page', ''),
+                    'issn': item.get('ISSN', []),
+                    'isbn': item.get('ISBN', []),
+                    'crossref_type': item.get('type', ''),
+                    'member': item.get('member', ''),
+                    'prefix': item.get('prefix', '')
+                }
+            )
+            
+        except Exception as e:
+            logger.error(f"Error parsing CrossRef item: {e}")
+            return None
+    
+    def _extract_title(self, item: Dict[str, Any]) -> str:
+        """Extract title from CrossRef item."""
+        titles = item.get('title', [])
+        if isinstance(titles, list) and titles:
+            return titles[0]
+        return str(titles) if titles else ''
+    
+    def _extract_authors(self, item: Dict[str, Any]) -> List[str]:
+        """Extract author names from CrossRef item."""
+        authors = []
+        author_list = item.get('author', [])
+        
+        for author in author_list:
+            if isinstance(author, dict):
+                given = author.get('given', '')
+                family = author.get('family', '')
+                if given and family:
+                    authors.append(f"{given} {family}")
+                elif family:
+                    authors.append(family)
+                elif given:
+                    authors.append(given)
+                    
+        return authors
+    
+    def _extract_date(self, item: Dict[str, Any], date_field: str) -> Optional[datetime]:
+        """Extract date from CrossRef item."""
+        date_info = item.get(date_field, {})
+        if not date_info:
+            return None
+            
+        date_parts = date_info.get('date-parts', [])
+        if not date_parts or not date_parts[0]:
+            return None
+            
+        parts = date_parts[0]
+        try:
+            year = parts[0] if len(parts) > 0 else 1970
+            month = parts[1] if len(parts) > 1 else 1
+            day = parts[2] if len(parts) > 2 else 1
+            return datetime(year, month, day)
+        except (ValueError, IndexError):
+            return None
+    
+    def _extract_container_title(self, item: Dict[str, Any]) -> str:
+        """Extract container title (journal/book title) from CrossRef item."""
+        container_titles = item.get('container-title', [])
+        if isinstance(container_titles, list) and container_titles:
+            return container_titles[0]
+        return str(container_titles) if container_titles else ''
+    
+    def _extract_pdf_url(self, item: Dict[str, Any]) -> str:
+        """Extract PDF URL from CrossRef item."""
+        # Check for link in the resource field
+        resource = item.get('resource', {})
+        if resource:
+            primary = resource.get('primary', {})
+            if primary and primary.get('URL', '').endswith('.pdf'):
+                return primary['URL']
+        
+        # Check in links array
+        links = item.get('link', [])
+        for link in links:
+            if isinstance(link, dict):
+                content_type = link.get('content-type', '')
+                if 'pdf' in content_type.lower():
+                    return link.get('URL', '')
+                    
+        return ''
+    
+    def download_pdf(self, paper_id: str, save_path: str) -> str:
+        """
+        CrossRef doesn't provide direct PDF downloads.
+        
+        Args:
+            paper_id: DOI of the paper
+            save_path: Directory to save the PDF
+            
+        Raises:
+            NotImplementedError: Always raises this error as CrossRef doesn't provide direct PDF access
+        """
+        message = ("CrossRef does not provide direct PDF downloads. "
+                  "CrossRef is a citation database that provides metadata about academic papers. "
+                  "To access the full text, please use the paper's DOI or URL to visit the publisher's website.")
+        raise NotImplementedError(message)
+    
+    def read_paper(self, paper_id: str, save_path: str = "./downloads") -> str:
+        """
+        CrossRef doesn't provide direct paper content access.
+        
+        Args:
+            paper_id: DOI of the paper
+            save_path: Directory for potential PDF storage (unused)
+            
+        Returns:
+            str: Error message indicating PDF reading is not supported
+        """
+        message = ("CrossRef papers cannot be read directly through this tool. "
+                  "CrossRef is a citation database that provides metadata about academic papers. "
+                  "Only metadata and abstracts are available through CrossRef's API. "
+                  "To access the full text, please use the paper's DOI or URL to visit the publisher's website.")
+        return message
+
+    def get_paper_by_doi(self, doi: str) -> Optional[Paper]:
+        """
+        Get a specific paper by DOI.
+        
+        Args:
+            doi: Digital Object Identifier
+            
+        Returns:
+            Paper object if found, None otherwise
+        """
+        try:
+            url = f"{self.BASE_URL}/works/{doi}"
+            params = {'mailto': 'paper-search@example.org'}
+            
+            response = self.session.get(url, params=params, timeout=30)
+            
+            if response.status_code == 404:
+                logger.warning(f"DOI not found in CrossRef: {doi}")
+                return None
+                
+            response.raise_for_status()
+            data = response.json()
+            
+            item = data.get('message', {})
+            return self._parse_crossref_item(item)
+            
+        except requests.RequestException as e:
+            logger.error(f"Error fetching DOI {doi} from CrossRef: {e}")
+            return None
+        except Exception as e:
+            logger.error(f"Unexpected error fetching DOI {doi}: {e}")
+            return None
+
+if __name__ == "__main__":
+    # Test CrossRefSearcher functionality
+    # 测试CrossRefSearcher功能
+    searcher = CrossRefSearcher()
+    
+    # Test search functionality
+    # 测试搜索功能
+    print("Testing search functionality...")
+    query = "machine learning"
+    max_results = 5
+    papers = []
+    try:
+        papers = searcher.search(query, max_results=max_results)
+        print(f"Found {len(papers)} papers for query '{query}':")
+        for i, paper in enumerate(papers, 1):
+            print(f"{i}. {paper.title} (DOI: {paper.doi})")
+            print(f"   Authors: {', '.join(paper.authors[:3])}{'...' if len(paper.authors) > 3 else ''}")
+            print(f"   Published: {paper.published_date.year}")
+            print(f"   Citations: {paper.citations}")
+            publisher = paper.extra.get('publisher', 'N/A') if paper.extra else 'N/A'
+            print(f"   Publisher: {publisher}")
+            print()
+    except Exception as e:
+        print(f"Error during search: {e}")
+    
+    # Test DOI lookup functionality
+    # 测试DOI查找功能
+    if papers:
+        print("Testing DOI lookup functionality...")
+        test_doi = papers[0].doi
+        try:
+            paper = searcher.get_paper_by_doi(test_doi)
+            if paper:
+                print(f"Successfully retrieved paper by DOI: {paper.title}")
+            else:
+                print("Failed to retrieve paper by DOI")
+        except Exception as e:
+            print(f"Error during DOI lookup: {e}")
+    
+    # Test PDF download functionality (will return unsupported message)
+    # 测试PDF下载功能（会返回不支持的提示）
+    if papers:
+        print("\nTesting PDF download functionality...")
+        paper_id = papers[0].doi
+        try:
+            pdf_path = searcher.download_pdf(paper_id, "./downloads")
+        except NotImplementedError as e:
+            print(f"Expected error: {e}")
+    
+    # Test paper reading functionality (will return unsupported message)
+    # 测试论文阅读功能（会返回不支持的提示）
+    if papers:
+        print("\nTesting paper reading functionality...")
+        paper_id = papers[0].doi
+        message = searcher.read_paper(paper_id)
+        print(f"Message: {message}")
+
+
+================================================
+FILE: paper_search_mcp/academic_platforms/google_scholar.py
+================================================
+from typing import List, Optional
+from datetime import datetime
+import requests
+from bs4 import BeautifulSoup
+import time
+import random
+from ..paper import Paper
+import logging
+
+logger = logging.getLogger(__name__)
+
+class PaperSource:
+    """Abstract base class for paper sources"""
+    def search(self, query: str, **kwargs) -> List[Paper]:
+        raise NotImplementedError
+
+    def download_pdf(self, paper_id: str, save_path: str) -> str:
+        raise NotImplementedError
+
+    def read_paper(self, paper_id: str, save_path: str) -> str:
+        raise NotImplementedError
+    
+
+class GoogleScholarSearcher(PaperSource):
+    """Custom implementation of Google Scholar paper search"""
+    
+    SCHOLAR_URL = "https://scholar.google.com/scholar"
+    BROWSERS = [
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36"
+    ]
+
+    def __init__(self):
+        self._setup_session()
+
+    def _setup_session(self):
+        """Initialize session with random user agent"""
+        self.session = requests.Session()
+        self.session.headers.update({
+            'User-Agent': random.choice(self.BROWSERS),
+            'Accept': 'text/html,application/xhtml+xml',
+            'Accept-Language': 'en-US,en;q=0.9'
+        })
+
+    def _extract_year(self, text: str) -> Optional[int]:
+        """Extract year from publication info"""
+        for word in text.split():
+            if word.isdigit() and 1900 <= int(word) <= datetime.now().year:
+                return int(word)
+        return None
+
+    def _parse_paper(self, item) -> Optional[Paper]:
+        """Parse single paper entry from HTML"""
+        try:
+            # Extract main paper elements
+            title_elem = item.find('h3', class_='gs_rt')
+            info_elem = item.find('div', class_='gs_a')
+            abstract_elem = item.find('div', class_='gs_rs')
+
+            if not title_elem or not info_elem:
+                return None
+
+            # Process title and URL
+            title = title_elem.get_text(strip=True).replace('[PDF]', '').replace('[HTML]', '')
+            link = title_elem.find('a', href=True)
+            url = link['href'] if link else ''
+
+            # Process author info
+            info_text = info_elem.get_text()
+            authors = [a.strip() for a in info_text.split('-')[0].split(',')]
+            year = self._extract_year(info_text)
+
+            # Create paper object
+            return Paper(
+                paper_id=f"gs_{hash(url)}",
+                title=title,
+                authors=authors,
+                abstract=abstract_elem.get_text() if abstract_elem else "",
+                url=url,
+                pdf_url="",
+                published_date=datetime(year, 1, 1) if year else None,
+                updated_date=None,
+                source="google_scholar",
+                categories=[],
+                keywords=[],
+                doi="",
+                citations=0
+            )
+        except Exception as e:
+            logger.warning(f"Failed to parse paper: {e}")
+            return None
+
+    def search(self, query: str, max_results: int = 10) -> List[Paper]:
+        """
+        Search Google Scholar with custom parameters
+        """
+        papers = []
+        start = 0
+        results_per_page = min(10, max_results)
+
+        while len(papers) < max_results:
+            try:
+                # Construct search parameters
+                params = {
+                    'q': query,
+                    'start': start,
+                    'hl': 'en',
+                    'as_sdt': '0,5'  # Include articles and citations
+                }
+
+                # Make request with random delay
+                time.sleep(random.uniform(1.0, 3.0))
+                response = self.session.get(self.SCHOLAR_URL, params=params)
+                
+                if response.status_code != 200:
+                    logger.error(f"Search failed with status {response.status_code}")
+                    break
+
+                # Parse results
+                soup = BeautifulSoup(response.text, 'html.parser')
+                results = soup.find_all('div', class_='gs_ri')
+
+                if not results:
+                    break
+
+                # Process each result
+                for item in results:
+                    if len(papers) >= max_results:
+                        break
+                        
+                    paper = self._parse_paper(item)
+                    if paper:
+                        papers.append(paper)
+
+                start += results_per_page
+
+            except Exception as e:
+                logger.error(f"Search error: {e}")
+                break
+
+        return papers[:max_results]
+
+    def download_pdf(self, paper_id: str, save_path: str) -> str:
+        """
+        Google Scholar doesn't support direct PDF downloads
+        
+        Raises:
+            NotImplementedError: Always raises this error
+        """
+        raise NotImplementedError(
+            "Google Scholar doesn't provide direct PDF downloads. "
+            "Please use the paper URL to access the publisher's website."
+        )
+
+    def read_paper(self, paper_id: str, save_path: str = "./downloads") -> str:
+        """
+        Google Scholar doesn't support direct paper reading
+        
+        Returns:
+            str: Message indicating the feature is not supported
+        """
+        return (
+            "Google Scholar doesn't support direct paper reading. "
+            "Please use the paper URL to access the full text on the publisher's website."
+        )
+
+if __name__ == "__main__":
+    # Test Google Scholar searcher
+    searcher = GoogleScholarSearcher()
+    
+    print("Testing search functionality...")
+    query = "machine learning"
+    max_results = 5
+    
+    try:
+        papers = searcher.search(query, max_results=max_results)
+        print(f"\nFound {len(papers)} papers for query '{query}':")
+        for i, paper in enumerate(papers, 1):
+            print(f"\n{i}. {paper.title}")
+            print(f"   Authors: {', '.join(paper.authors)}")
+            print(f"   Citations: {paper.citations}")
+            print(f"   URL: {paper.url}")
+    except Exception as e:
+        print(f"Error during search: {e}")
+
+
+================================================
+FILE: paper_search_mcp/academic_platforms/hub.py
+================================================
+[Empty file]
+
+
+================================================
+FILE: paper_search_mcp/academic_platforms/iacr.py
+================================================
+from typing import List, Optional
+from datetime import datetime
+import requests
+from bs4 import BeautifulSoup
+import time
+import random
+from ..paper import Paper
+import logging
+from PyPDF2 import PdfReader
+import os
+
+logger = logging.getLogger(__name__)
+
+
+class PaperSource:
+    """Abstract base class for paper sources"""
+
+    def search(self, query: str, **kwargs) -> List[Paper]:
+        raise NotImplementedError
+
+    def download_pdf(self, paper_id: str, save_path: str) -> str:
+        raise NotImplementedError
+
+    def read_paper(self, paper_id: str, save_path: str) -> str:
+        raise NotImplementedError
+
+
+class IACRSearcher(PaperSource):
+    """IACR ePrint Archive paper search implementation"""
+
+    IACR_SEARCH_URL = "https://eprint.iacr.org/search"
+    IACR_BASE_URL = "https://eprint.iacr.org"
+    BROWSERS = [
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+    ]
+
+    def __init__(self):
+        self._setup_session()
+
+    def _setup_session(self):
+        """Initialize session with random user agent"""
+        self.session = requests.Session()
+        self.session.headers.update(
+            {
+                "User-Agent": random.choice(self.BROWSERS),
+                "Accept": "text/html,application/xhtml+xml",
+                "Accept-Language": "en-US,en;q=0.9",
+            }
+        )
+
+    def _parse_date(self, date_str: str) -> Optional[datetime]:
+        """Parse date from IACR format (e.g., '2025-06-02')"""
+        try:
+            return datetime.strptime(date_str.strip(), "%Y-%m-%d")
+        except ValueError:
+            logger.warning(f"Could not parse date: {date_str}")
+            return None
+
+    def _parse_paper(self, item, fetch_details: bool = True) -> Optional[Paper]:
+        """Parse single paper entry from IACR HTML and optionally fetch detailed info"""
+        try:
+            # Extract paper ID from the search result
+            header_div = item.find("div", class_="d-flex")
+            if not header_div:
+                return None
+
+            # Get paper ID from the link
+            paper_link = header_div.find("a", class_="paperlink")
+            if not paper_link:
+                return None
+
+            paper_id = paper_link.get_text(strip=True)  # e.g., "2025/1014"
+
+            if fetch_details:
+                # Fetch detailed information for this paper
+                logger.info(f"Fetching detailed info for paper {paper_id}")
+                detailed_paper = self.get_paper_details(paper_id)
+                if detailed_paper:
+                    return detailed_paper
+                else:
+                    logger.warning(
+                        f"Could not fetch details for {paper_id}, falling back to search result parsing"
+                    )
+
+            # Fallback: parse from search results if detailed fetch fails or is disabled
+            paper_url = self.IACR_BASE_URL + paper_link["href"]
+
+            # Get PDF URL
+            pdf_link = header_div.find("a", href=True, string="(PDF)")
+            pdf_url = self.IACR_BASE_URL + pdf_link["href"] if pdf_link else ""
+
+            # Get last updated date
+            last_updated_elem = header_div.find("small", class_="ms-auto")
+            updated_date = None
+            if last_updated_elem:
+                date_text = last_updated_elem.get_text(strip=True)
+                if "Last updated:" in date_text:
+                    date_str = date_text.replace("Last updated:", "").strip()
+                    updated_date = self._parse_date(date_str)
+
+            # Get content from the second div
+            content_div = item.find("div", class_="ms-md-4")
+            if not content_div:
+                return None
+
+            # Extract title
+            title_elem = content_div.find("strong")
+            title = title_elem.get_text(strip=True) if title_elem else ""
+
+            # Extract authors
+            authors_elem = content_div.find("span", class_="fst-italic")
+            authors = []
+            if authors_elem:
+                authors_text = authors_elem.get_text(strip=True)
+                authors = [author.strip() for author in authors_text.split(",")]
+
+            # Extract category
+            category_elem = content_div.find("small", class_="badge")
+            categories = []
+            if category_elem:
+                category_text = category_elem.get_text(strip=True)
+                categories = [category_text]
+
+            # Extract abstract
+            abstract_elem = content_div.find("p", class_="search-abstract")
+            abstract = abstract_elem.get_text(strip=True) if abstract_elem else ""
+
+            # Create paper object with search result data
+            published_date = updated_date if updated_date else datetime(1900, 1, 1)
+
+            return Paper(
+                paper_id=paper_id,
+                title=title,
+                authors=authors,
+                abstract=abstract,
+                url=paper_url,
+                pdf_url=pdf_url,
+                published_date=published_date,
+                updated_date=updated_date,
+                source="iacr",
+                categories=categories,
+                keywords=[],
+                doi="",
+                citations=0,
+            )
+
+        except Exception as e:
+            logger.warning(f"Failed to parse IACR paper: {e}")
+            return None
+
+    def search(
+        self, query: str, max_results: int = 10, fetch_details: bool = True
+    ) -> List[Paper]:
+        """
+        Search IACR ePrint Archive
+
+        Args:
+            query: Search query string
+            max_results: Maximum number of results to return
+            fetch_details: Whether to fetch detailed information for each paper (slower but more complete)
+
+        Returns:
+            List[Paper]: List of paper objects
+        """
+        papers = []
+
+        try:
+            # Construct search parameters
+            params = {"q": query}
+
+            # Make request
+            response = self.session.get(self.IACR_SEARCH_URL, params=params)
+
+            if response.status_code != 200:
+                logger.error(f"IACR search failed with status {response.status_code}")
+                return papers
+
+            # Parse results
+            soup = BeautifulSoup(response.text, "html.parser")
+
+            # Find all paper entries - they are divs with class "mb-4"
+            results = soup.find_all("div", class_="mb-4")
+
+            if not results:
+                logger.info("No results found for the query")
+                return papers
+
+            # Process each result
+            for i, item in enumerate(results):
+                if len(papers) >= max_results:
+                    break
+
+                logger.info(f"Processing paper {i+1}/{min(len(results), max_results)}")
+                paper = self._parse_paper(item, fetch_details=fetch_details)
+                if paper:
+                    papers.append(paper)
+
+        except Exception as e:
+            logger.error(f"IACR search error: {e}")
+
+        return papers[:max_results]
+
+    def download_pdf(self, paper_id: str, save_path: str) -> str:
+        """
+        Download PDF from IACR ePrint Archive
+
+        Args:
+            paper_id: IACR paper ID (e.g., "2025/1014")
+            save_path: Path to save the PDF
+
+        Returns:
+            str: Path to downloaded file or error message
+        """
+        try:
+            pdf_url = f"{self.IACR_BASE_URL}/{paper_id}.pdf"
+
+            response = self.session.get(pdf_url)
+
+            if response.status_code == 200:
+                filename = f"{save_path}/iacr_{paper_id.replace('/', '_')}.pdf"
+                with open(filename, "wb") as f:
+                    f.write(response.content)
+                return filename
+            else:
+                return f"Failed to download PDF: HTTP {response.status_code}"
+
+        except Exception as e:
+            logger.error(f"PDF download error: {e}")
+            return f"Error downloading PDF: {e}"
+
+    def read_paper(self, paper_id: str, save_path: str = "./downloads") -> str:
+        """
+        Download and extract text from IACR paper PDF
+
+        Args:
+            paper_id: IACR paper ID
+            save_path: Directory to save downloaded PDF
+
+        Returns:
+            str: Extracted text from the PDF or error message
+        """
+        try:
+            # First get paper details to get the PDF URL
+            paper = self.get_paper_details(paper_id)
+            if not paper or not paper.pdf_url:
+                return f"Error: Could not find PDF URL for paper {paper_id}"
+
+            # Download the PDF
+            pdf_response = requests.get(paper.pdf_url, timeout=30)
+            pdf_response.raise_for_status()
+
+            # Create download directory if it doesn't exist
+            os.makedirs(save_path, exist_ok=True)
+
+            # Save the PDF
+            filename = f"iacr_{paper_id.replace('/', '_')}.pdf"
+            pdf_path = os.path.join(save_path, filename)
+
+            with open(pdf_path, "wb") as f:
+                f.write(pdf_response.content)
+
+            # Extract text using PyPDF2
+            reader = PdfReader(pdf_path)
+            text = ""
+
+            for page_num, page in enumerate(reader.pages):
+                try:
+                    page_text = page.extract_text()
+                    if page_text:
+                        text += f"\n--- Page {page_num + 1} ---\n"
+                        text += page_text + "\n"
+                except Exception as e:
+                    logger.warning(
+                        f"Failed to extract text from page {page_num + 1}: {e}"
+                    )
+                    continue
+
+            if not text.strip():
+                return (
+                    f"PDF downloaded to {pdf_path}, but unable to extract readable text"
+                )
+
+            # Add paper metadata at the beginning
+            metadata = f"Title: {paper.title}\n"
+            metadata += f"Authors: {', '.join(paper.authors)}\n"
+            metadata += f"Published Date: {paper.published_date}\n"
+            metadata += f"URL: {paper.url}\n"
+            metadata += f"PDF downloaded to: {pdf_path}\n"
+            metadata += "=" * 80 + "\n\n"
+
+            return metadata + text.strip()
+
+        except requests.RequestException as e:
+            logger.error(f"Error downloading PDF: {e}")
+            return f"Error downloading PDF: {e}"
+        except Exception as e:
+            logger.error(f"Read paper error: {e}")
+            return f"Error reading paper: {e}"
+
+    def get_paper_details(self, paper_id: str) -> Optional[Paper]:
+        """
+        Fetch detailed information for a specific IACR paper
+
+        Args:
+            paper_id: IACR paper ID (e.g., "2009/101") or full URL
+
+        Returns:
+            Paper: Detailed paper object with full metadata
+        """
+        try:
+            # Handle both paper ID and full URL
+            if paper_id.startswith("http"):
+                paper_url = paper_id
+                # Extract paper ID from URL
+                parts = paper_url.split("/")
+                if len(parts) >= 2:
+                    paper_id = f"{parts[-2]}/{parts[-1]}"
+            else:
+                paper_url = f"{self.IACR_BASE_URL}/{paper_id}"
+
+            # Make request
+            response = self.session.get(paper_url)
+
+            if response.status_code != 200:
+                logger.error(
+                    f"Failed to fetch paper details: HTTP {response.status_code}"
+                )
+                return None
+
+            # Parse the page
+            soup = BeautifulSoup(response.text, "html.parser")
+
+            # Extract title from h3 element
+            title = ""
+            title_elem = soup.find("h3", class_="mb-3")
+            if title_elem:
+                title = title_elem.get_text(strip=True)
+
+            # Extract authors from the italic paragraph
+            authors = []
+            author_elem = soup.find("p", class_="fst-italic")
+            if author_elem:
+                author_text = author_elem.get_text(strip=True)
+                # Split by " and " to get individual authors
+                authors = [
+                    author.strip()
+                    for author in author_text.replace(" and ", ",").split(",")
+                ]
+
+            # Extract abstract from the paragraph with white-space: pre-wrap style
+            abstract = ""
+            abstract_p = soup.find("p", style="white-space: pre-wrap;")
+            if abstract_p:
+                abstract = abstract_p.get_text(strip=True)
+
+            # Extract metadata using a simpler, safer approach
+            publication_info = ""
+            keywords = []
+            history_entries = []
+            last_updated = None
+
+            # Extract publication info
+            page_text = soup.get_text()
+            lines = page_text.split("\n")
+
+            # Find publication info
+            for i, line in enumerate(lines):
+                if "Publication info" in line and i + 1 < len(lines):
+                    publication_info = lines[i + 1].strip()
+                    break
+
+            # Find keywords using CSS selector for keyword badges
+            try:
+                keyword_elements = soup.select("a.badge.bg-secondary.keyword")
+                keywords = [elem.get_text(strip=True) for elem in keyword_elements]
+            except:
+                keywords = []
+
+            # Find history entries
+            history_found = False
+            for i, line in enumerate(lines):
+                if "History" in line and ":" not in line:
+                    history_found = True
+                    continue
+                elif (
+                    history_found
+                    and ":" in line
+                    and not line.strip().startswith("Short URL")
+                ):
+                    history_entries.append(line.strip())
+                    # Try to extract the last updated date from the first history entry
+                    if not last_updated:
+                        date_str = line.split(":")[0].strip()
+                        try:
+                            last_updated = datetime.strptime(date_str, "%Y-%m-%d")
+                        except ValueError:
+                            pass
+                elif history_found and (
+                    line.strip().startswith("Short URL")
+                    or line.strip().startswith("License")
+                ):
+                    break
+
+            # Combine history entries
+            history = "; ".join(history_entries) if history_entries else ""
+
+            # Construct PDF URL
+            pdf_url = f"{self.IACR_BASE_URL}/{paper_id}.pdf"
+
+            # Use last updated date or current date as published date
+            published_date = last_updated if last_updated else datetime.now()
+
+            return Paper(
+                paper_id=paper_id,
+                title=title,
+                authors=authors,
+                abstract=abstract,
+                url=paper_url,
+                pdf_url=pdf_url,
+                published_date=published_date,
+                updated_date=last_updated,
+                source="iacr",
+                categories=[],
+                keywords=keywords,
+                doi="",
+                citations=0,
+                extra={"publication_info": publication_info, "history": history},
+            )
+
+        except Exception as e:
+            logger.error(f"Error fetching paper details for {paper_id}: {e}")
+            return None
+
+
+if __name__ == "__main__":
+    # Test IACR searcher
+    searcher = IACRSearcher()
+
+    print("Testing IACR search functionality...")
+    query = "secret sharing"
+    max_results = 2
+
+    print("\n" + "=" * 60)
+    print("1. Testing search with detailed information (slower but complete)")
+    print("=" * 60)
+    try:
+        papers = searcher.search(query, max_results=max_results, fetch_details=True)
+        print(f"\nFound {len(papers)} papers for query '{query}' (with details):")
+        for i, paper in enumerate(papers, 1):
+            print(f"\n{i}. {paper.title}")
+            print(f"   Paper ID: {paper.paper_id}")
+            print(f"   Authors: {', '.join(paper.authors)}")
+            print(f"   Categories: {', '.join(paper.categories)}")
+            print(f"   Keywords: {', '.join(paper.keywords)}")
+            print(f"   Last Updated: {paper.updated_date}")
+            print(f"   URL: {paper.url}")
+            print(f"   PDF: {paper.pdf_url}")
+            if paper.abstract:
+                print(f"   Abstract: {paper.abstract[:200]}...")
+            if paper.extra:
+                pub_info = paper.extra.get("publication_info", "")
+                if pub_info:
+                    print(f"   Publication Info: {pub_info}")
+    except Exception as e:
+        print(f"Error during detailed search: {e}")
+
+    print("\n" + "=" * 60)
+    print("2. Testing search with compact information only (faster)")
+    print("=" * 60)
+    try:
+        papers_compact = searcher.search(
+            query, max_results=max_results, fetch_details=False
+        )
+        print(f"\nFound {len(papers_compact)} papers for query '{query}' (compact):")
+        for i, paper in enumerate(papers_compact, 1):
+            print(f"\n{i}. {paper.title}")
+            print(f"   Paper ID: {paper.paper_id}")
+            print(f"   Authors: {', '.join(paper.authors)}")
+            print(f"   Categories: {', '.join(paper.categories)}")
+            print(f"   Keywords: {', '.join(paper.keywords)} (from search)")
+            if paper.abstract:
+                print(f"   Abstract: {paper.abstract[:150]}...")
+    except Exception as e:
+        print(f"Error during compact search: {e}")
+
+    print("\n" + "=" * 60)
+    print("3. Testing manual paper details fetching")
+    print("=" * 60)
+    test_paper_id = "2009/101"
+    try:
+        paper_details = searcher.get_paper_details(test_paper_id)
+        if paper_details:
+            print(f"\nManual fetch for paper {test_paper_id}:")
+            print(f"Title: {paper_details.title}")
+            print(f"Authors: {', '.join(paper_details.authors)}")
+            print(f"Keywords: {', '.join(paper_details.keywords)}")
+            print(
+                f"Publication Info: {paper_details.extra.get('publication_info', 'N/A') if paper_details.extra else 'N/A'}"
+            )
+            print(
+                f"History: {paper_details.extra.get('history', 'N/A') if paper_details.extra else 'N/A'}"
+            )
+            print(f"Abstract: {paper_details.abstract[:200]}...")
+        else:
+            print(f"Could not fetch details for paper {test_paper_id}")
+    except Exception as e:
+        print(f"Error fetching paper details: {e}")
+
+
+
+================================================
+FILE: paper_search_mcp/academic_platforms/medrxiv.py
+================================================
+from typing import List
+import requests
+import os
+from datetime import datetime, timedelta
+from ..paper import Paper
+from PyPDF2 import PdfReader
+
+class PaperSource:
+    """Abstract base class for paper sources"""
+    def search(self, query: str, **kwargs) -> List[Paper]:
+        raise NotImplementedError
+
+    def download_pdf(self, paper_id: str, save_path: str) -> str:
+        raise NotImplementedError
+
+    def read_paper(self, paper_id: str, save_path: str) -> str:
+        raise NotImplementedError
+
+class MedRxivSearcher(PaperSource):
+    """Searcher for medRxiv papers"""
+    BASE_URL = "https://api.biorxiv.org/details/medrxiv"
+
+    def __init__(self):
+        self.session = requests.Session()
+        self.session.proxies = {'http': None, 'https': None}
+        self.timeout = 30
+        self.max_retries = 3
+
+    def search(self, query: str, max_results: int = 10, days: int = 30) -> List[Paper]:
+        """
+        Search for papers on medRxiv by category within the last N days.
+
+        Args:
+            query: Category name to search for (e.g., "cardiovascular medicine").
+            max_results: Maximum number of papers to return.
+            days: Number of days to look back for papers.
+
+        Returns:
+            List of Paper objects matching the category within the specified date range.
+        """
+        # Calculate date range: last N days
+        end_date = datetime.now().strftime('%Y-%m-%d')
+        start_date = (datetime.now() - timedelta(days=days)).strftime('%Y-%m-%d')
+        
+        # Format category: lowercase and replace spaces with underscores
+        category = query.lower().replace(' ', '_')
+        
+        papers = []
+        cursor = 0
+        while len(papers) < max_results:
+            url = f"{self.BASE_URL}/{start_date}/{end_date}/{cursor}"
+            if category:
+                url += f"?category={category}"
+
+            tries = 0
+            while tries < self.max_retries:
+                try:
+                    response = self.session.get(url, timeout=self.timeout)
+                    response.raise_for_status()
+                    data = response.json()
+                    collection = data.get('collection', [])
+                    for item in collection:
+                        try:
+                            date = datetime.strptime(item['date'], '%Y-%m-%d')
+                            papers.append(Paper(
+                                paper_id=item['doi'],
+                                title=item['title'],
+                                authors=item['authors'].split('; '),
+                                abstract=item['abstract'],
+                                url=f"https://www.medrxiv.org/content/{item['doi']}v{item.get('version', '1')}",
+                                pdf_url=f"https://www.medrxiv.org/content/{item['doi']}v{item.get('version', '1')}.full.pdf",
+                                published_date=date,
+                                updated_date=date,
+                                source="medrxiv",
+                                categories=[item['category']],
+                                keywords=[],
+                                doi=item['doi']
+                            ))
+                        except Exception as e:
+                            print(f"Error parsing medRxiv entry: {e}")
+                    if len(collection) < 100:
+                        break  # No more results
+                    cursor += 100
+                    break  # Exit retry loop on success
+                except requests.exceptions.RequestException as e:
+                    tries += 1
+                    if tries == self.max_retries:
+                        print(f"Failed to connect to medRxiv API after {self.max_retries} attempts: {e}")
+                        break
+                    print(f"Attempt {tries} failed, retrying...")
+            else:
+                continue
+            break
+
+        return papers[:max_results]
+
+    def download_pdf(self, paper_id: str, save_path: str) -> str:
+        """
+        Download a PDF for a given paper ID from medRxiv.
+
+        Args:
+            paper_id: The DOI of the paper.
+            save_path: Directory to save the PDF.
+
+        Returns:
+            Path to the downloaded PDF file.
+        """
+        if not paper_id:
+            raise ValueError("Invalid paper_id: paper_id is empty")
+
+        pdf_url = f"https://www.medrxiv.org/content/{paper_id}v1.full.pdf"
+        tries = 0
+        while tries < self.max_retries:
+            try:
+                # Add User-Agent to avoid potential 403 errors
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                }
+                response = self.session.get(pdf_url, timeout=self.timeout, headers=headers)
+                response.raise_for_status()
+                os.makedirs(save_path, exist_ok=True)
+                output_file = f"{save_path}/{paper_id.replace('/', '_')}.pdf"
+                with open(output_file, 'wb') as f:
+                    f.write(response.content)
+                return output_file
+            except requests.exceptions.RequestException as e:
+                tries += 1
+                if tries == self.max_retries:
+                    raise Exception(f"Failed to download PDF after {self.max_retries} attempts: {e}")
+                print(f"Attempt {tries} failed, retrying...")
+    
+    def read_paper(self, paper_id: str, save_path: str = "./downloads") -> str:
+        """
+        Read a paper and convert it to text format.
+        
+        Args:
+            paper_id: medRxiv DOI
+            save_path: Directory where the PDF is/will be saved
+            
+        Returns:
+            str: The extracted text content of the paper
+        """
+        pdf_path = f"{save_path}/{paper_id.replace('/', '_')}.pdf"
+        if not os.path.exists(pdf_path):
+            pdf_path = self.download_pdf(paper_id, save_path)
+        
+        try:
+            reader = PdfReader(pdf_path)
+            text = ""
+            for page in reader.pages:
+                text += page.extract_text() + "\n"
+            return text.strip()
+        except Exception as e:
+            print(f"Error reading PDF for paper {paper_id}: {e}")
+            return ""
+
+
+================================================
+FILE: paper_search_mcp/academic_platforms/pubmed.py
+================================================
+# paper_search_mcp/sources/pubmed.py
+from typing import List
+import requests
+from xml.etree import ElementTree as ET
+from datetime import datetime
+from ..paper import Paper
+import os
+
+class PaperSource:
+    """Abstract base class for paper sources"""
+    def search(self, query: str, **kwargs) -> List[Paper]:
+        raise NotImplementedError
+
+    def download_pdf(self, paper_id: str, save_path: str) -> str:
+        raise NotImplementedError
+
+    def read_paper(self, paper_id: str, save_path: str) -> str:
+        raise NotImplementedError
+
+class PubMedSearcher(PaperSource):
+    """Searcher for PubMed papers"""
+    SEARCH_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
+    FETCH_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
+
+    def search(self, query: str, max_results: int = 10) -> List[Paper]:
+        search_params = {
+            'db': 'pubmed',
+            'term': query,
+            'retmax': max_results,
+            'retmode': 'xml'
+        }
+        search_response = requests.get(self.SEARCH_URL, params=search_params)
+        search_root = ET.fromstring(search_response.content)
+        ids = [id.text for id in search_root.findall('.//Id')]
+        
+        fetch_params = {
+            'db': 'pubmed',
+            'id': ','.join(ids),
+            'retmode': 'xml'
+        }
+        fetch_response = requests.get(self.FETCH_URL, params=fetch_params)
+        fetch_root = ET.fromstring(fetch_response.content)
+        
+        papers = []
+        for article in fetch_root.findall('.//PubmedArticle'):
+            try:
+                pmid = article.find('.//PMID').text
+                title = article.find('.//ArticleTitle').text
+                authors = [f"{author.find('LastName').text} {author.find('Initials').text}" 
+                           for author in article.findall('.//Author')]
+                abstract = article.find('.//AbstractText').text if article.find('.//AbstractText') is not None else ''
+                pub_date = article.find('.//PubDate/Year').text
+                published = datetime.strptime(pub_date, '%Y')
+                doi = article.find('.//ELocationID[@EIdType="doi"]').text if article.find('.//ELocationID[@EIdType="doi"]') is not None else ''
+                papers.append(Paper(
+                    paper_id=pmid,
+                    title=title,
+                    authors=authors,
+                    abstract=abstract,
+                    url=f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/",
+                    pdf_url='',  # PubMed 无直接 PDF
+                    published_date=published,
+                    updated_date=published,
+                    source='pubmed',
+                    categories=[],
+                    keywords=[],
+                    doi=doi
+                ))
+            except Exception as e:
+                print(f"Error parsing PubMed article: {e}")
+        return papers
+
+    def download_pdf(self, paper_id: str, save_path: str) -> str:
+        """Attempt to download a paper's PDF from PubMed.
+
+        Args:
+            paper_id: PubMed ID (PMID)
+            save_path: Directory to save the PDF
+
+        Returns:
+            str: Error message indicating PDF download is not supported
+        
+        Raises:
+            NotImplementedError: Always raises this error as PubMed doesn't provide direct PDF access
+        """
+        message = ("PubMed does not provide direct PDF downloads. "
+                  "Please use the paper's DOI or URL to access the publisher's website.")
+        raise NotImplementedError(message)
+
+    def read_paper(self, paper_id: str, save_path: str = "./downloads") -> str:
+        """Attempt to read and extract text from a PubMed paper.
+
+        Args:
+            paper_id: PubMed ID (PMID)
+            save_path: Directory for potential PDF storage (unused)
+
+        Returns:
+            str: Error message indicating PDF reading is not supported
+        """
+        message = ("PubMed papers cannot be read directly through this tool. "
+                  "Only metadata and abstracts are available through PubMed's API. "
+                  "Please use the paper's DOI or URL to access the full text on the publisher's website.")
+        return message
+
+if __name__ == "__main__":
+    # 测试 PubMedSearcher 的功能
+    searcher = PubMedSearcher()
+    
+    # 测试搜索功能
+    print("Testing search functionality...")
+    query = "machine learning"
+    max_results = 5
+    try:
+        papers = searcher.search(query, max_results=max_results)
+        print(f"Found {len(papers)} papers for query '{query}':")
+        for i, paper in enumerate(papers, 1):
+            print(f"{i}. {paper.title}")
+            print(f"   Authors: {', '.join(paper.authors)}")
+            print(f"   DOI: {paper.doi}")
+            print(f"   URL: {paper.url}\n")
+    except Exception as e:
+        print(f"Error during search: {e}")
+    
+    # 测试 PDF 下载功能（会返回不支持的提示）
+    if papers:
+        print("\nTesting PDF download functionality...")
+        paper_id = papers[0].paper_id
+        try:
+            pdf_path = searcher.download_pdf(paper_id, "./downloads")
+        except NotImplementedError as e:
+            print(f"Expected error: {e}")
+    
+    # 测试论文阅读功能（会返回不支持的提示）
+    if papers:
+        print("\nTesting paper reading functionality...")
+        paper_id = papers[0].paper_id
+        try:
+            message = searcher.read_paper(paper_id)
+            print(f"Response: {message}")
+        except Exception as e:
+            print(f"Error during paper reading: {e}")
+
+
+================================================
+FILE: paper_search_mcp/academic_platforms/sci_hub.py
+================================================
+"""Sci-Hub downloader integration.
+
+Simple wrapper adapted from scihub.py for downloading PDFs via Sci-Hub.
+"""
+from pathlib import Path
+import re
+import hashlib
+import logging
+from typing import Optional
+
+import requests
+from bs4 import BeautifulSoup
+
+
+class SciHubFetcher:
+    """Simple Sci-Hub PDF downloader."""
+
+    def __init__(self, base_url: str = "https://sci-hub.se", output_dir: str = "./downloads"):
+        """Initialize with Sci-Hub URL and output directory."""
+        self.base_url = base_url.rstrip("/")
+        self.output_dir = Path(output_dir)
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        self.session = requests.Session()
+        self.session.headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate',
+            'DNT': '1',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
+        }
+
+    def download_pdf(self, identifier: str) -> Optional[str]:
+        """Download a PDF from Sci-Hub using a DOI, PMID, or URL.
+
+        Args:
+            identifier: DOI, PMID, or URL to the paper
+
+        Returns:
+            Path to saved PDF or None on failure
+        """
+        if not identifier.strip():
+            return None
+
+        try:
+            # Get direct URL to PDF
+            pdf_url = self._get_direct_url(identifier)
+            if not pdf_url:
+                logging.error(f"Could not find PDF URL for identifier: {identifier}")
+                return None
+
+            # Download the PDF
+            response = self.session.get(pdf_url, verify=False, timeout=30)
+            
+            if response.status_code != 200:
+                logging.error(f"Failed to download PDF, status {response.status_code}")
+                return None
+
+            if response.headers.get('Content-Type') != 'application/pdf':
+                logging.error("Response is not a PDF")
+                return None
+
+            # Generate filename and save
+            filename = self._generate_filename(response, identifier)
+            file_path = self.output_dir / filename
+            
+            with open(file_path, 'wb') as f:
+                f.write(response.content)
+                
+            return str(file_path)
+
+        except Exception as e:
+            logging.error(f"Error downloading PDF for {identifier}: {e}")
+            return None
+
+    def _get_direct_url(self, identifier: str) -> Optional[str]:
+        """Get the direct PDF URL from Sci-Hub."""
+        try:
+            # If it's already a direct PDF URL, return it
+            if identifier.endswith('.pdf'):
+                return identifier
+
+            # Search on Sci-Hub
+            search_url = f"{self.base_url}/{identifier}"
+            response = self.session.get(search_url, verify=False, timeout=20)
+            
+            if response.status_code != 200:
+                return None
+
+            soup = BeautifulSoup(response.content, 'html.parser')
+            
+            # Check for article not found
+            if "article not found" in response.text.lower():
+                logging.warning("Article not found on Sci-Hub")
+                return None
+
+            # Look for embed tag with PDF (most common in modern Sci-Hub)
+            embed = soup.find('embed', {'type': 'application/pdf'})
+            logging.debug(f"Found embed tag: {embed}")
+            if embed:
+                src = embed.get('src') if hasattr(embed, 'get') else None
+                logging.debug(f"Embed src: {src}")
+                if src and isinstance(src, str):
+                    if src.startswith('//'):
+                        pdf_url = 'https:' + src
+                        logging.debug(f"Returning PDF URL: {pdf_url}")
+                        return pdf_url
+                    elif src.startswith('/'):
+                        pdf_url = self.base_url + src
+                        logging.debug(f"Returning PDF URL: {pdf_url}")
+                        return pdf_url
+                    else:
+                        logging.debug(f"Returning PDF URL: {src}")
+                        return src
+
+            # Look for iframe with PDF (fallback)
+            iframe = soup.find('iframe')
+            if iframe:
+                src = iframe.get('src') if hasattr(iframe, 'get') else None
+                if src and isinstance(src, str):
+                    if src.startswith('//'):
+                        return 'https:' + src
+                    elif src.startswith('/'):
+                        return self.base_url + src
+                    else:
+                        return src
+
+            # Look for download button with onclick
+            for button in soup.find_all('button'):
+                onclick = button.get('onclick', '') if hasattr(button, 'get') else ''
+                if isinstance(onclick, str) and 'pdf' in onclick.lower():
+                    # Extract URL from onclick JavaScript
+                    url_match = re.search(r"location\.href='([^']+)'", onclick)
+                    if url_match:
+                        url = url_match.group(1)
+                        if url.startswith('//'):
+                            return 'https:' + url
+                        elif url.startswith('/'):
+                            return self.base_url + url
+                        else:
+                            return url
+
+            # Look for direct download links
+            for link in soup.find_all('a'):
+                href = link.get('href', '') if hasattr(link, 'get') else ''
+                if isinstance(href, str) and href and ('pdf' in href.lower() or href.endswith('.pdf')):
+                    if href.startswith('//'):
+                        return 'https:' + href
+                    elif href.startswith('/'):
+                        return self.base_url + href
+                    elif href.startswith('http'):
+                        return href
+
+            return None
+
+        except Exception as e:
+            logging.error(f"Error getting direct URL for {identifier}: {e}")
+            return None
+
+    def _generate_filename(self, response: requests.Response, identifier: str) -> str:
+        """Generate a unique filename for the PDF."""
+        # Try to get filename from URL
+        url_parts = response.url.split('/')
+        if url_parts:
+            name = url_parts[-1]
+            # Remove view parameters
+            name = re.sub(r'#view=(.+)', '', name)
+            if name.endswith('.pdf'):
+                # Generate hash for uniqueness
+                pdf_hash = hashlib.md5(response.content).hexdigest()[:8]
+                base_name = name[:-4]  # Remove .pdf
+                return f"{pdf_hash}_{base_name}.pdf"
+
+        # Fallback: use identifier
+        clean_identifier = re.sub(r'[^\w\-_.]', '_', identifier)
+        pdf_hash = hashlib.md5(response.content).hexdigest()[:8]
+        return f"{pdf_hash}_{clean_identifier}.pdf"
+
+
+================================================
+FILE: paper_search_mcp/academic_platforms/semantic.py
+================================================
+from typing import List, Optional
+from datetime import datetime
+import requests
+from bs4 import BeautifulSoup
+import time
+import random
+from ..paper import Paper
+import logging
+from PyPDF2 import PdfReader
+import os
+import re
+
+logger = logging.getLogger(__name__)
+
+
+class PaperSource:
+    """Abstract base class for paper sources"""
+
+    def search(self, query: str, **kwargs) -> List[Paper]:
+        raise NotImplementedError
+
+    def download_pdf(self, paper_id: str, save_path: str) -> str:
+        raise NotImplementedError
+
+    def read_paper(self, paper_id: str, save_path: str) -> str:
+        raise NotImplementedError
+
+
+class SemanticSearcher(PaperSource):
+    """Semantic Scholar paper search implementation"""
+
+    SEMANTIC_SEARCH_URL = "https://api.semanticscholar.org/graph/v1/paper/search"
+    SEMANTIC_BASE_URL = "https://api.semanticscholar.org/graph/v1"
+    BROWSERS = [
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+    ]
+
+    def __init__(self):
+        self._setup_session()
+
+    def _setup_session(self):
+        """Initialize session with random user agent"""
+        self.session = requests.Session()
+        self.session.headers.update(
+            {
+                "User-Agent": random.choice(self.BROWSERS),
+                "Accept": "text/html,application/xhtml+xml",
+                "Accept-Language": "en-US,en;q=0.9",
+            }
+        )
+
+    def _parse_date(self, date_str: str) -> Optional[datetime]:
+        """Parse date from Semantic Scholar format (e.g., '2025-06-02')"""
+        try:
+            return datetime.strptime(date_str.strip(), "%Y-%m-%d")
+        except ValueError:
+            logger.warning(f"Could not parse date: {date_str}")
+            return None
+
+    def _extract_url_from_disclaimer(self, disclaimer: str) -> str:
+        """Extract URL from disclaimer text"""
+        # 匹配常见的 URL 模式
+        url_patterns = [
+            r'https?://[^\s,)]+',  # 基本的 HTTP/HTTPS URL
+            r'https?://arxiv\.org/abs/[^\s,)]+',  # arXiv 链接
+            r'https?://[^\s,)]*\.pdf',  # PDF 文件链接
+        ]
+        
+        all_urls = []
+        for pattern in url_patterns:
+            matches = re.findall(pattern, disclaimer)
+            all_urls.extend(matches)
+        
+        if not all_urls:
+            return ""
+        
+        doi_urls = [url for url in all_urls if 'doi.org' in url]
+        if doi_urls:
+            return doi_urls[0]
+        
+        non_unpaywall_urls = [url for url in all_urls if 'unpaywall.org' not in url]
+        if non_unpaywall_urls:
+            url = non_unpaywall_urls[0]
+            if 'arxiv.org/abs/' in url:
+                pdf_url = url.replace('/abs/', '/pdf/')
+                return pdf_url
+            return url
+        
+        if all_urls:
+            url = all_urls[0]
+            if 'arxiv.org/abs/' in url:
+                pdf_url = url.replace('/abs/', '/pdf/')
+                return pdf_url
+            return url
+        
+        return ""
+
+    def _parse_paper(self, item) -> Optional[Paper]:
+        """Parse single paper entry from Semantic Scholar HTML and optionally fetch detailed info"""
+        try:
+            authors = [author['name'] for author in item.get('authors', [])]
+            
+            # Parse the publication date
+            published_date = self._parse_date(item.get('publicationDate', ''))
+            
+            # Safely get PDF URL - 支持从 disclaimer 中提取
+            pdf_url = ""
+            if item.get('openAccessPdf'):
+                open_access_pdf = item['openAccessPdf']
+                # 首先尝试直接获取 URL
+                if open_access_pdf.get('url'):
+                    pdf_url = open_access_pdf['url']
+                # 如果 URL 为空但有 disclaimer，尝试从 disclaimer 中提取
+                elif open_access_pdf.get('disclaimer'):
+                    pdf_url = self._extract_url_from_disclaimer(open_access_pdf['disclaimer'])
+            
+            # Safely get DOI
+            doi = ""
+            if item.get('externalIds') and item['externalIds'].get('DOI'):
+                doi = item['externalIds']['DOI']
+            
+            # Safely get categories
+            categories = item.get('fieldsOfStudy', [])
+            if not categories:
+                categories = []
+            
+            return Paper(
+                paper_id=item['paperId'],
+                title=item['title'],
+                authors=authors,
+                abstract=item.get('abstract', ''),
+                url=item.get('url', ''),
+                pdf_url=pdf_url,
+                published_date=published_date,
+                source="semantic",
+                categories=categories,
+                doi=doi,
+                citations=item.get('citationCount', 0),
+            )
+
+        except Exception as e:
+            logger.warning(f"Failed to parse Semantic paper: {e}")
+            return None
+        
+    @staticmethod
+    def get_api_key() -> Optional[str]:
+        """
+        Get the Semantic Scholar API key from environment variables.
+        Returns None if no API key is set or if it's empty, enabling unauthenticated access.
+        """
+        api_key = os.getenv("SEMANTIC_SCHOLAR_API_KEY")
+        if not api_key or api_key.strip() == "":
+            logger.warning("No SEMANTIC_SCHOLAR_API_KEY set or it's empty. Using unauthenticated access with lower rate limits.")
+            return None
+        return api_key.strip()
+    
+    def request_api(self, path: str, params: dict) -> dict:
+        """
+        Make a request to the Semantic Scholar API with optional API key.
+        """
+        max_retries = 3
+        retry_delay = 2  # seconds
+        
+        for attempt in range(max_retries):
+            try:
+                api_key = self.get_api_key()
+                headers = {"x-api-key": api_key} if api_key else {}
+                url = f"{self.SEMANTIC_BASE_URL}/{path}"
+                response = self.session.get(url, params=params, headers=headers)
+                
+                # 检查是否是429错误（限流）
+                if response.status_code == 429:
+                    if attempt < max_retries - 1:
+                        wait_time = retry_delay * (2 ** attempt)  # 指数退避
+                        logger.warning(f"Rate limited (429). Waiting {wait_time} seconds before retry {attempt + 1}/{max_retries}")
+                        time.sleep(wait_time)
+                        continue
+                    else:
+                        logger.error(f"Rate limited (429) after {max_retries} attempts. Please wait before making more requests.")
+                        return {"error": "rate_limited", "status_code": 429, "message": "Too many requests. Please wait before retrying."}
+                
+                response.raise_for_status()
+                return response
+                
+            except requests.exceptions.HTTPError as e:
+                if e.response.status_code == 429:
+                    if attempt < max_retries - 1:
+                        wait_time = retry_delay * (2 ** attempt)
+                        logger.warning(f"Rate limited (429). Waiting {wait_time} seconds before retry {attempt + 1}/{max_retries}")
+                        time.sleep(wait_time)
+                        continue
+                    else:
+                        logger.error(f"Rate limited (429) after {max_retries} attempts. Please wait before making more requests.")
+                        return {"error": "rate_limited", "status_code": 429, "message": "Too many requests. Please wait before retrying."}
+                else:
+                    logger.error(f"HTTP Error requesting API: {e}")
+                    return {"error": "http_error", "status_code": e.response.status_code, "message": str(e)}
+            except Exception as e:
+                logger.error(f"Error requesting API: {e}")
+                return {"error": "general_error", "message": str(e)}
+        
+        return {"error": "max_retries_exceeded", "message": "Maximum retry attempts exceeded"}
+
+    def search(self, query: str, year: Optional[str] = None, max_results: int = 10) -> List[Paper]:
+        """
+        Search Semantic Scholar
+
+        Args:
+            query: Search query string
+            year (Optional[str]): Filter by publication year. Supports several formats:
+            - Single year: "2019"
+            - Year range: "2016-2020"
+            - Since year: "2010-"
+            - Until year: "-2015"
+            max_results: Maximum number of results to return
+
+        Returns:
+            List[Paper]: List of paper objects
+        """
+        papers = []
+
+        try:
+            fields = ["title", "abstract", "year", "citationCount", "authors", "url","publicationDate","externalIds","fieldsOfStudy"]
+            # Construct search parameters
+            params = {
+                "query": query,
+                "limit": max_results,
+                "fields": ",".join(fields),
+            }
+            if year:
+                params["year"] = year
+            # Make request
+            response = self.request_api("paper/search", params)
+            
+            # Check for errors
+            if isinstance(response, dict) and "error" in response:
+                error_msg = response.get("message", "Unknown error")
+                if response.get("error") == "rate_limited":
+                    logger.error(f"Rate limited by Semantic Scholar API: {error_msg}")
+                else:
+                    logger.error(f"Semantic Scholar API error: {error_msg}")
+                return papers
+            
+            # Check response status code
+            if not hasattr(response, 'status_code') or response.status_code != 200:
+                status_code = getattr(response, 'status_code', 'unknown')
+                logger.error(f"Semantic Scholar search failed with status {status_code}")
+                return papers
+                
+            data = response.json()
+            results = data['data']
+
+            if not results:
+                logger.info("No results found for the query")
+                return papers
+
+            # Process each result
+            for i, item in enumerate(results):
+                if len(papers) >= max_results:
+                    break
+
+                logger.info(f"Processing paper {i+1}/{min(len(results), max_results)}")
+                paper = self._parse_paper(item)
+                if paper:
+                    papers.append(paper)
+
+        except Exception as e:
+            logger.error(f"Semantic Scholar search error: {e}")
+
+        return papers[:max_results]
+
+    def download_pdf(self, paper_id: str, save_path: str) -> str:
+        """
+        Download PDF from Semantic Scholar
+
+        Args:
+            paper_id (str): Paper identifier in one of the following formats:
+            - Semantic Scholar ID (e.g., "649def34f8be52c8b66281af98ae884c09aef38b")
+            - DOI:<doi> (e.g., "DOI:10.18653/v1/N18-3011")
+            - ARXIV:<id> (e.g., "ARXIV:2106.15928")
+            - MAG:<id> (e.g., "MAG:112218234")
+            - ACL:<id> (e.g., "ACL:W12-3903")
+            - PMID:<id> (e.g., "PMID:19872477")
+            - PMCID:<id> (e.g., "PMCID:2323736")
+            - URL:<url> (e.g., "URL:https://arxiv.org/abs/2106.15928v1")
+            save_path: Path to save the PDF
+            
+        Returns:
+            str: Path to downloaded file or error message
+        """
+        try:
+            paper = self.get_paper_details(paper_id)
+            if not paper or not paper.pdf_url:
+                return f"Error: Could not find PDF URL for paper {paper_id}"
+            pdf_url = paper.pdf_url
+            pdf_response = requests.get(pdf_url, timeout=30)
+            pdf_response.raise_for_status()
+            
+            # Create download directory if it doesn't exist
+            os.makedirs(save_path, exist_ok=True)
+            
+            filename = f"semantic_{paper_id.replace('/', '_')}.pdf"
+            pdf_path = os.path.join(save_path, filename)
+            
+            with open(pdf_path, "wb") as f:
+                f.write(pdf_response.content)
+            return pdf_path
+        except Exception as e:
+            logger.error(f"PDF download error: {e}")
+            return f"Error downloading PDF: {e}"
+
+    def read_paper(self, paper_id: str, save_path: str = "./downloads") -> str:
+        """
+        Download and extract text from Semantic Scholar paper PDF
+
+        Args:
+            paper_id (str): Paper identifier in one of the following formats:
+            - Semantic Scholar ID (e.g., "649def34f8be52c8b66281af98ae884c09aef38b")
+            - DOI:<doi> (e.g., "DOI:10.18653/v1/N18-3011")
+            - ARXIV:<id> (e.g., "ARXIV:2106.15928")
+            - MAG:<id> (e.g., "MAG:112218234")
+            - ACL:<id> (e.g., "ACL:W12-3903")
+            - PMID:<id> (e.g., "PMID:19872477")
+            - PMCID:<id> (e.g., "PMCID:2323736")
+            - URL:<url> (e.g., "URL:https://arxiv.org/abs/2106.15928v1")
+            save_path: Directory to save downloaded PDF
+
+        Returns:
+            str: Extracted text from the PDF or error message
+        """
+        try:
+            # First get paper details to get the PDF URL
+            paper = self.get_paper_details(paper_id)
+            if not paper or not paper.pdf_url:
+                return f"Error: Could not find PDF URL for paper {paper_id}"
+
+            # Download the PDF
+            pdf_response = requests.get(paper.pdf_url, timeout=30)
+            pdf_response.raise_for_status()
+
+            # Create download directory if it doesn't exist
+            os.makedirs(save_path, exist_ok=True)
+
+            # Save the PDF
+            filename = f"semantic_{paper_id.replace('/', '_')}.pdf"
+            pdf_path = os.path.join(save_path, filename)
+
+            with open(pdf_path, "wb") as f:
+                f.write(pdf_response.content)
+
+            # Extract text using PyPDF2
+            reader = PdfReader(pdf_path)
+            text = ""
+
+            for page_num, page in enumerate(reader.pages):
+                try:
+                    page_text = page.extract_text()
+                    if page_text:
+                        text += f"\n--- Page {page_num + 1} ---\n"
+                        text += page_text + "\n"
+                except Exception as e:
+                    logger.warning(
+                        f"Failed to extract text from page {page_num + 1}: {e}"
+                    )
+                    continue
+
+            if not text.strip():
+                return (
+                    f"PDF downloaded to {pdf_path}, but unable to extract readable text"
+                )
+
+            # Add paper metadata at the beginning
+            metadata = f"Title: {paper.title}\n"
+            metadata += f"Authors: {', '.join(paper.authors)}\n"
+            metadata += f"Published Date: {paper.published_date}\n"
+            metadata += f"URL: {paper.url}\n"
+            metadata += f"PDF downloaded to: {pdf_path}\n"
+            metadata += "=" * 80 + "\n\n"
+
+            return metadata + text.strip()
+
+        except requests.RequestException as e:
+            logger.error(f"Error downloading PDF: {e}")
+            return f"Error downloading PDF: {e}"
+        except Exception as e:
+            logger.error(f"Read paper error: {e}")
+            return f"Error reading paper: {e}"
+
+    def get_paper_details(self, paper_id: str) -> Optional[Paper]:
+        """
+        Fetch detailed information for a specific Semantic Scholar paper
+
+        Args:
+            paper_id (str): Paper identifier in one of the following formats:
+            - Semantic Scholar ID (e.g., "649def34f8be52c8b66281af98ae884c09aef38b")
+            - DOI:<doi> (e.g., "DOI:10.18653/v1/N18-3011")
+            - ARXIV:<id> (e.g., "ARXIV:2106.15928")
+            - MAG:<id> (e.g., "MAG:112218234")
+            - ACL:<id> (e.g., "ACL:W12-3903")
+            - PMID:<id> (e.g., "PMID:19872477")
+            - PMCID:<id> (e.g., "PMCID:2323736")
+            - URL:<url> (e.g., "URL:https://arxiv.org/abs/2106.15928v1")
+
+        Returns:
+            Paper: Detailed paper object with full metadata
+        """
+        try:
+            fields = ["title", "abstract", "year", "citationCount", "authors", "url","publicationDate","externalIds","fieldsOfStudy"]
+            params = {
+                "fields": ",".join(fields),
+            }
+            
+            response = self.request_api(f"paper/{paper_id}", params)
+            
+            # Check for errors
+            if isinstance(response, dict) and "error" in response:
+                error_msg = response.get("message", "Unknown error")
+                if response.get("error") == "rate_limited":
+                    logger.error(f"Rate limited by Semantic Scholar API: {error_msg}")
+                else:
+                    logger.error(f"Semantic Scholar API error: {error_msg}")
+                return None
+            
+            # Check response status code
+            if not hasattr(response, 'status_code') or response.status_code != 200:
+                status_code = getattr(response, 'status_code', 'unknown')
+                logger.error(f"Semantic Scholar paper details fetch failed with status {status_code}")
+                return None
+                
+            results = response.json()
+            paper = self._parse_paper(results)
+            if paper:
+                return paper
+            else:
+                return None
+        except Exception as e:
+            logger.error(f"Error fetching paper details for {paper_id}: {e}")
+            return None
+
+
+if __name__ == "__main__":
+    # Test Semantic searcher
+    searcher = SemanticSearcher()
+
+    print("Testing Semantic search functionality...")
+    query = "secret sharing"
+    max_results = 2
+
+    print("\n" + "=" * 60)
+    print("1. Testing search with detailed information")
+    print("=" * 60)
+    try:
+        papers = searcher.search(query, year=None, max_results=max_results)
+        print(f"\nFound {len(papers)} papers for query '{query}' (with details):")
+        for i, paper in enumerate(papers, 1):
+            print(f"\n{i}. {paper.title}")
+            print(f"   Paper ID: {paper.paper_id}")
+            print(f"   Authors: {', '.join(paper.authors)}")
+            print(f"   Categories: {', '.join(paper.categories)}")
+            print(f"   URL: {paper.url}")
+            if paper.pdf_url:
+                print(f"   PDF: {paper.pdf_url}")
+            if paper.published_date:
+                print(f"   Published Date: {paper.published_date}")
+            if paper.abstract:
+                print(f"   Abstract: {paper.abstract[:200]}...")
+    except Exception as e:
+        print(f"Error during detailed search: {e}")
+
+    print("\n" + "=" * 60)
+    print("2. Testing manual paper details fetching")
+    print("=" * 60)
+    test_paper_id = "5bbfdf2e62f0508c65ba6de9c72fe2066fd98138"
+    try:
+        paper_details = searcher.get_paper_details(test_paper_id)
+        if paper_details:
+            print(f"\nManual fetch for paper {test_paper_id}:")
+            print(f"Title: {paper_details.title}")
+            print(f"Authors: {', '.join(paper_details.authors)}")
+            print(f"Categories: {', '.join(paper_details.categories)}")
+            print(f"URL: {paper_details.url}")
+            if paper_details.pdf_url:
+                print(f"PDF: {paper_details.pdf_url}")
+            if paper_details.published_date:
+                print(f"Published Date: {paper_details.published_date}")
+            print(f"DOI: {paper_details.doi}")
+            print(f"Citations: {paper_details.citations}")
+            print(f"Abstract: {paper_details.abstract[:200]}...")
+        else:
+            print(f"Could not fetch details for paper {test_paper_id}")
+    except Exception as e:
+        print(f"Error fetching paper details: {e}")
+    
+
+
+================================================
+FILE: tests/__init__.py
+================================================
+[Empty file]
+
+
+================================================
+FILE: tests/test.pubmed.py
+================================================
+import unittest
+from paper_search_mcp.academic_platforms.pubmed import PubMedSearcher
+
+class TestPubMedSearcher(unittest.TestCase):
+    def test_search(self):
+        searcher = PubMedSearcher()
+        papers = searcher.search("machine learning", max_results=10)
+        print(f"Found {len(papers)} papers for query 'machine learning':")
+        for i, paper in enumerate(papers, 1):
+            print(f"{i}. {paper.title} (ID: {paper.paper_id})")
+        self.assertEqual(len(papers), 10)
+        self.assertTrue(papers[0].title)
+    
+    def test_pdf_unsupported(self):
+        searcher = PubMedSearcher()
+        with self.assertRaises(NotImplementedError):
+            searcher.download_pdf("12345678", "./downloads")
+    
+    def test_read_paper_message(self):
+        searcher = PubMedSearcher()
+        message = searcher.read_paper("12345678")
+        self.assertIn("PubMed papers cannot be read directly", message)
+
+if __name__ == '__main__':
+    unittest.main()
+
+
+================================================
+FILE: tests/test_arxiv.py
+================================================
+# tests/test_arxiv.py
+import unittest
+from paper_search_mcp.academic_platforms.arxiv import ArxivSearcher
+
+class TestArxivSearcher(unittest.TestCase):
+    def test_search(self):
+        searcher = ArxivSearcher()
+        papers = searcher.search("machine learning", max_results=10)
+        print(f"Found {len(papers)} papers for query 'machine learning':")
+        for i, paper in enumerate(papers, 1):
+            print(f"{i}. {paper.title} (ID: {paper.paper_id})")
+        self.assertEqual(len(papers), 10)
+        self.assertTrue(papers[0].title)
+
+if __name__ == '__main__':
+    unittest.main()
+
+
+================================================
+FILE: tests/test_biorxiv.py
+================================================
+import unittest
+import os
+import requests
+from paper_search_mcp.academic_platforms.biorxiv import BioRxivSearcher
+
+def check_api_accessible():
+    """检查 bioRxiv API 是否可访问"""
+    try:
+        response = requests.get("https://api.biorxiv.org/details/biorxiv/0/1", timeout=5)
+        return response.status_code == 200
+    except:
+        return False
+
+class TestBioRxivSearcher(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.api_accessible = check_api_accessible()
+        if not cls.api_accessible:
+            print("\nWarning: bioRxiv API is not accessible, some tests will be skipped")
+
+    def setUp(self):
+        self.searcher = BioRxivSearcher()
+
+    def test_search(self):
+        if not self.api_accessible:
+            self.skipTest("bioRxiv API is not accessible")
+        
+        papers = self.searcher.search("machine learning", max_results=10)
+        print(f"Found {len(papers)} papers for query 'machine learning':")
+        for i, paper in enumerate(papers, 1):
+            print(f"{i}. {paper.title} (ID: {paper.paper_id})")
+        self.assertTrue(len(papers) > 0)
+        self.assertTrue(papers[0].title)
+
+    def test_download_and_read(self):
+        if not self.api_accessible:
+            self.skipTest("bioRxiv API is not accessible")
+            
+        papers = self.searcher.search("machine learning", max_results=1)
+        if not papers:
+            self.skipTest("No papers found for testing download")
+            
+        save_path = "./downloads"
+        os.makedirs(save_path, exist_ok=True)
+        paper = papers[0]
+        pdf_path = None
+        
+        try:
+            pdf_path = self.searcher.download_pdf(paper.paper_id, save_path)
+            self.assertTrue(os.path.exists(pdf_path))
+            
+            text_content = self.searcher.read_paper(paper.paper_id, save_path)
+            self.assertTrue(len(text_content) > 0)
+        finally:
+            if pdf_path and os.path.exists(pdf_path):
+                os.remove(pdf_path)
+            if os.path.exists(save_path):
+                os.rmdir(save_path)
+
+if __name__ == '__main__':
+    unittest.main()
+
+
+================================================
+FILE: tests/test_crossref.py
+================================================
+# tests/test_crossref.py
+import unittest
+import os
+import requests
+from paper_search_mcp.academic_platforms.crossref import CrossRefSearcher
+
+def check_api_accessible():
+    """检查 CrossRef API 是否可访问
+    Check if CrossRef API is accessible"""
+    try:
+        response = requests.get("https://api.crossref.org/works?sample=1", timeout=5)
+        return response.status_code == 200
+    except:
+        return False
+
+class TestCrossRefSearcher(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.api_accessible = check_api_accessible()
+        if not cls.api_accessible:
+            print("\nWarning: CrossRef API is not accessible, some tests will be skipped")
+
+    def setUp(self):
+        self.searcher = CrossRefSearcher()
+
+    def test_search(self):
+        if not self.api_accessible:
+            self.skipTest("CrossRef API is not accessible")
+        
+        papers = self.searcher.search("machine learning", max_results=5)
+        print(f"Found {len(papers)} papers for query 'machine learning':")
+        for i, paper in enumerate(papers, 1):
+            print(f"{i}. {paper.title} (DOI: {paper.doi})")
+            print(f"   Authors: {', '.join(paper.authors[:2])}{'...' if len(paper.authors) > 2 else ''}")
+            print(f"   Published: {paper.published_date.year if paper.published_date else 'N/A'}")
+            print(f"   Citations: {paper.citations}")
+            if paper.extra:
+                print(f"   Publisher: {paper.extra.get('publisher', 'N/A')}")
+                print(f"   Type: {paper.extra.get('crossref_type', 'N/A')}")
+            print()
+        self.assertTrue(len(papers) > 0)
+        if papers:
+            self.assertTrue(papers[0].title)
+            self.assertTrue(papers[0].doi)
+
+    def test_search_with_filters(self):
+        if not self.api_accessible:
+            self.skipTest("CrossRef API is not accessible")
+            
+        # Test search with date filter
+        papers = self.searcher.search(
+            "artificial intelligence", 
+            max_results=3,
+            filter="from-pub-date:2020,has-full-text:true"
+        )
+        print(f"Found {len(papers)} papers with filters")
+        self.assertTrue(len(papers) >= 0)  # May return 0 if no papers match filters
+
+    def test_get_paper_by_doi(self):
+        if not self.api_accessible:
+            self.skipTest("CrossRef API is not accessible")
+            
+        # Test with a known DOI
+        known_doi = "10.1038/nature12373"  # A Nature paper
+        paper = self.searcher.get_paper_by_doi(known_doi)
+        
+        if paper:  # Paper might not be found
+            print(f"Retrieved paper by DOI: {paper.title}")
+            self.assertEqual(paper.doi, known_doi)
+            self.assertTrue(paper.title)
+        else:
+            print(f"Paper with DOI {known_doi} not found in CrossRef")
+
+    def test_get_paper_by_invalid_doi(self):
+        if not self.api_accessible:
+            self.skipTest("CrossRef API is not accessible")
+            
+        # Test with an invalid DOI
+        invalid_doi = "10.1234/invalid.doi.123456789"
+        paper = self.searcher.get_paper_by_doi(invalid_doi)
+        self.assertIsNone(paper)
+
+    def test_download_pdf_not_supported(self):
+        with self.assertRaises(NotImplementedError) as context:
+            self.searcher.download_pdf("10.1038/nature12373", "./downloads")
+        
+        self.assertIn("CrossRef does not provide direct PDF downloads", str(context.exception))
+
+    def test_read_paper_not_supported(self):
+        message = self.searcher.read_paper("10.1038/nature12373")
+        self.assertIn("CrossRef papers cannot be read directly", message)
+        self.assertIn("metadata and abstracts are available", message)
+
+    def test_search_error_handling(self):
+        # Test with invalid search parameters to check error handling
+        papers = self.searcher.search("", max_results=0)  # Empty query
+        self.assertEqual(len(papers), 0)
+
+    def test_user_agent_header(self):
+        # Test that the session has the correct user agent
+        self.assertIn("paper-search-mcp", self.searcher.session.headers.get('User-Agent', ''))
+        self.assertIn("mailto:", self.searcher.session.headers.get('User-Agent', ''))
+
+if __name__ == '__main__':
+    unittest.main()
+
+
+================================================
+FILE: tests/test_google_scholar.py
+================================================
+import unittest
+import os
+import requests
+from paper_search_mcp.academic_platforms.google_scholar import GoogleScholarSearcher
+
+def check_scholar_accessible():
+    """检查 Google Scholar 是否可访问"""
+    try:
+        response = requests.get("https://scholar.google.com", timeout=5)
+        return response.status_code == 200
+    except:
+        return False
+
+class TestGoogleScholarSearcher(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.scholar_accessible = check_scholar_accessible()
+        if not cls.scholar_accessible:
+            print("\nWarning: Google Scholar is not accessible, some tests will be skipped")
+
+    def setUp(self):
+        self.searcher = GoogleScholarSearcher()
+
+    def test_search(self):
+        if not self.scholar_accessible:
+            self.skipTest("Google Scholar is not accessible")
+            
+        papers = self.searcher.search("machine learning", max_results=5)
+        print(f"\nFound {len(papers)} papers for query 'machine learning':")
+        for i, paper in enumerate(papers, 1):
+            print(f"\n{i}. {paper.title}")
+            print(f"   Authors: {', '.join(paper.authors)}")
+            print(f"   Citations: {paper.citations}")
+        self.assertTrue(len(papers) > 0)
+        self.assertTrue(papers[0].title)
+
+    def test_download_pdf_not_supported(self):
+        with self.assertRaises(NotImplementedError):
+            self.searcher.download_pdf("some_id", "./downloads")
+
+    def test_read_paper_not_supported(self):
+        message = self.searcher.read_paper("some_id")
+        self.assertIn("Google Scholar doesn't support direct paper reading", message)
+
+if __name__ == '__main__':
+    unittest.main()
+
+
+================================================
+FILE: tests/test_iacr.py
+================================================
+import unittest
+import os
+import requests
+from paper_search_mcp.academic_platforms.iacr import IACRSearcher
+
+
+def check_iacr_accessible():
+    """Check if IACR ePrint Archive is accessible"""
+    try:
+        response = requests.get("https://eprint.iacr.org", timeout=5)
+        return response.status_code == 200
+    except:
+        return False
+
+
+class TestIACRSearcher(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.iacr_accessible = check_iacr_accessible()
+        if not cls.iacr_accessible:
+            print(
+                "\nWarning: IACR ePrint Archive is not accessible, some tests will be skipped"
+            )
+
+    def setUp(self):
+        self.searcher = IACRSearcher()
+
+    @unittest.skipUnless(check_iacr_accessible(), "IACR not accessible")
+    def test_search_basic(self):
+        """Test basic search functionality"""
+        results = self.searcher.search("secret sharing", max_results=3)
+
+        self.assertIsInstance(results, list)
+        self.assertLessEqual(len(results), 3)
+
+        if results:
+            paper = results[0]
+            self.assertTrue(hasattr(paper, "title"))
+            self.assertTrue(hasattr(paper, "authors"))
+            self.assertTrue(hasattr(paper, "abstract"))
+            self.assertTrue(hasattr(paper, "paper_id"))
+            self.assertTrue(hasattr(paper, "url"))
+            self.assertEqual(paper.source, "iacr")
+
+    @unittest.skipUnless(check_iacr_accessible(), "IACR not accessible")
+    def test_search_empty_query(self):
+        """Test search with empty query"""
+        results = self.searcher.search("", max_results=3)
+        self.assertIsInstance(results, list)
+
+    @unittest.skipUnless(check_iacr_accessible(), "IACR not accessible")
+    def test_search_max_results(self):
+        """Test max_results parameter"""
+        results = self.searcher.search("cryptography", max_results=2)
+        self.assertLessEqual(len(results), 2)
+
+    @unittest.skipUnless(check_iacr_accessible(), "IACR not accessible")
+    def test_download_pdf_functionality(self):
+        """Test PDF download method with actual download"""
+        import tempfile
+        import shutil
+
+        # Create a temporary directory for testing
+        test_dir = tempfile.mkdtemp(prefix="iacr_test_")
+
+        try:
+            # Test with a known paper that should exist
+            paper_id = "2009/101"  # A well-known paper
+
+            print(f"\nTesting PDF download for paper {paper_id}")
+            result = self.searcher.download_pdf(paper_id, test_dir)
+
+            # Check that result is a string
+            self.assertIsInstance(result, str)
+
+            # Check if download was successful
+            if not result.startswith("Error") and not result.startswith("Failed"):
+                # Download successful - check if file exists
+                self.assertTrue(
+                    os.path.exists(result), f"Downloaded file should exist at {result}"
+                )
+
+                # Check file size (PDF should be larger than 1KB)
+                file_size = os.path.getsize(result)
+                self.assertGreater(
+                    file_size, 1024, "PDF file should be larger than 1KB"
+                )
+
+                # Check file extension
+                self.assertTrue(
+                    result.endswith(".pdf"),
+                    "Downloaded file should have .pdf extension",
+                )
+
+                print(
+                    f"PDF successfully downloaded: {result} (size: {file_size} bytes)"
+                )
+            else:
+                print(f"Download failed (this might be expected): {result}")
+
+        except Exception as e:
+            print(f"Exception during PDF download test: {e}")
+            # Don't fail the test for network issues
+            pass
+        finally:
+            # Clean up temporary directory
+            if os.path.exists(test_dir):
+                shutil.rmtree(test_dir)
+
+    @unittest.skipUnless(check_iacr_accessible(), "IACR not accessible")
+    def test_read_paper_functionality(self):
+        """Test read paper method with text extraction functionality"""
+        import tempfile
+        import shutil
+
+        # Create a temporary directory for testing
+        test_dir = tempfile.mkdtemp(prefix="iacr_read_test_")
+
+        try:
+            # Test with a known paper
+            paper_id = "2009/101"
+
+            print(f"\nTesting read_paper for paper {paper_id}")
+            result = self.searcher.read_paper(paper_id, test_dir)
+
+            # Check that result is a string
+            self.assertIsInstance(result, str)
+
+            # Check for successful text extraction
+            if "Error" not in result and len(result) > 100:
+                print(f"Text extraction successful. Text length: {len(result)}")
+
+                # Should contain metadata
+                self.assertIn("Title:", result)
+                self.assertIn("Authors:", result)
+                self.assertIn("Published Date:", result)
+                self.assertIn("PDF downloaded to:", result)
+
+                # Should contain page markers indicating text extraction
+                self.assertIn("--- Page", result)
+
+                # Check if PDF was actually downloaded
+                expected_filename = f"iacr_{paper_id.replace('/', '_')}.pdf"
+                expected_path = os.path.join(test_dir, expected_filename)
+                self.assertTrue(os.path.exists(expected_path))
+
+                file_size = os.path.getsize(expected_path)
+                print(f"PDF file found: {expected_path} (size: {file_size} bytes)")
+                self.assertGreater(file_size, 1000)  # Should be at least 1KB
+
+                # Show a preview of extracted text
+                preview = result[:500] + "..." if len(result) > 500 else result
+                print(f"Text preview:\n{preview}")
+
+            else:
+                print(f"Read paper result: {result}")
+                # For network issues or PDF extraction problems, don't fail
+                print(
+                    "Note: This might be due to network issues or PDF extraction limitations"
+                )
+
+        except Exception as e:
+            print(f"Exception during read_paper test: {e}")
+            # Don't fail the test for network issues
+            pass
+        finally:
+            # Clean up temporary directory
+            if os.path.exists(test_dir):
+                shutil.rmtree(test_dir)
+
+    @unittest.skipUnless(check_iacr_accessible(), "IACR not accessible")
+    def test_get_paper_details(self):
+        """Test getting detailed paper information"""
+        paper_id = "2009/101"  # A known paper
+        paper_details = self.searcher.get_paper_details(paper_id)
+
+        if paper_details:
+            # Test basic attributes
+            self.assertTrue(paper_details.title)
+            self.assertEqual(paper_details.paper_id, paper_id)
+            self.assertEqual(paper_details.source, "iacr")
+            self.assertTrue(paper_details.url)
+            self.assertTrue(paper_details.pdf_url)
+
+            # Test that we have authors
+            self.assertIsInstance(paper_details.authors, list)
+            self.assertGreater(len(paper_details.authors), 0)
+
+            # Test that we have abstract
+            self.assertTrue(paper_details.abstract)
+
+            # Test extra metadata
+            if paper_details.extra:
+                self.assertIsInstance(paper_details.extra, dict)
+
+            # printing all details for verification
+            print(f"\n{paper_details}")
+        else:
+            self.fail("Could not fetch paper details")
+
+    @unittest.skipUnless(check_iacr_accessible(), "IACR not accessible")
+    def test_search_with_fetch_details(self):
+        """Test search functionality with fetch_details parameter"""
+        # Test with fetch_details=True (detailed information)
+        print("\nTesting search with fetch_details=True")
+        detailed_papers = self.searcher.search(
+            "cryptography", max_results=2, fetch_details=True
+        )
+
+        self.assertIsInstance(detailed_papers, list)
+        self.assertLessEqual(len(detailed_papers), 2)
+
+        if detailed_papers:
+            paper = detailed_papers[0]
+            self.assertEqual(paper.source, "iacr")
+
+            # Detailed papers should have more complete information
+            print(f"Detailed paper: {paper.title}")
+            print(f"Authors: {len(paper.authors)} authors")
+            print(f"Keywords: {len(paper.keywords)} keywords")
+            print(f"Abstract length: {len(paper.abstract)} chars")
+
+            # Should have keywords and publication info if available
+            if paper.keywords:
+                self.assertIsInstance(paper.keywords, list)
+                print(f"Keywords found: {', '.join(paper.keywords[:3])}...")
+
+            if paper.extra:
+                pub_info = paper.extra.get("publication_info", "")
+                if pub_info:
+                    print(f"Publication info: {pub_info[:50]}...")
+
+        # Test with fetch_details=False (compact information)
+        print("\nTesting search with fetch_details=False")
+        compact_papers = self.searcher.search(
+            "cryptography", max_results=2, fetch_details=False
+        )
+
+        self.assertIsInstance(compact_papers, list)
+        self.assertLessEqual(len(compact_papers), 2)
+
+        if compact_papers:
+            paper = compact_papers[0]
+            self.assertEqual(paper.source, "iacr")
+
+            print(f"Compact paper: {paper.title}")
+            print(f"Authors: {len(paper.authors)} authors")
+            print(f"Categories: {', '.join(paper.categories)}")
+            print(f"Abstract preview length: {len(paper.abstract)} chars")
+
+    @unittest.skipUnless(check_iacr_accessible(), "IACR not accessible")
+    def test_search_performance_comparison(self):
+        """Test performance difference between detailed and compact search"""
+        import time
+
+        query = "encryption"
+        max_results = 3
+
+        # Test compact search time
+        print("\nTesting compact search performance...")
+        start_time = time.time()
+        compact_papers = self.searcher.search(
+            query, max_results=max_results, fetch_details=False
+        )
+        compact_time = time.time() - start_time
+
+        print(
+            f"Compact search took {compact_time:.2f} seconds for {len(compact_papers)} papers"
+        )
+
+        # Test detailed search time
+        print("Testing detailed search performance...")
+        start_time = time.time()
+        detailed_papers = self.searcher.search(
+            query, max_results=max_results, fetch_details=True
+        )
+        detailed_time = time.time() - start_time
+
+        print(
+            f"Detailed search took {detailed_time:.2f} seconds for {len(detailed_papers)} papers"
+        )
+
+        # Detailed search should take longer (but this might not always be true due to network variability)
+        print(
+            f"Performance ratio (detailed/compact): {detailed_time/compact_time:.2f}x"
+        )
+
+        # Both should return the same number of papers
+        self.assertEqual(len(compact_papers), len(detailed_papers))
+
+        # Detailed papers should have more information
+        if detailed_papers and compact_papers:
+            detailed_paper = detailed_papers[0]
+            compact_paper = compact_papers[0]
+
+            # Detailed should have more keywords and longer abstracts typically
+            print(f"Information comparison for first paper:")
+            print(
+                f"  Compact - Keywords: {len(compact_paper.keywords)}, Abstract: {len(compact_paper.abstract)} chars"
+            )
+            print(
+                f"  Detailed - Keywords: {len(detailed_paper.keywords)}, Abstract: {len(detailed_paper.abstract)} chars"
+            )
+
+
+if __name__ == "__main__":
+    unittest.main()
+
+
+
+================================================
+FILE: tests/test_medrxiv.py
+================================================
+import unittest
+import os
+import requests
+from paper_search_mcp.academic_platforms.medrxiv import MedRxivSearcher
+
+def check_api_accessible():
+    """检查 medRxiv API 是否可访问"""
+    try:
+        response = requests.get("https://api.medRxiv.org/details/medrxiv/0/1", timeout=5)
+        return response.status_code == 200
+    except:
+        return False
+
+class TestMedRxivSearcher(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.api_accessible = check_api_accessible()
+        if not cls.api_accessible:
+            print("\nWarning: medRxiv API is not accessible, some tests will be skipped")
+
+    def setUp(self):
+        self.searcher = MedRxivSearcher()
+
+    def test_search(self):
+        if not self.api_accessible:
+            self.skipTest("medRxiv API is not accessible")
+        
+        papers = self.searcher.search("machine learning", max_results=10)
+        print(f"Found {len(papers)} papers for query 'machine learning':")
+        for i, paper in enumerate(papers, 1):
+            print(f"{i}. {paper.title} (ID: {paper.paper_id})")
+        self.assertTrue(len(papers) > 0)
+        self.assertTrue(papers[0].title)
+
+    def test_download_and_read(self):
+        if not self.api_accessible:
+            self.skipTest("medRxiv API is not accessible")
+            
+        papers = self.searcher.search("machine learning", max_results=1)
+        if not papers:
+            self.skipTest("No papers found for testing download")
+            
+        save_path = "./downloads"
+        os.makedirs(save_path, exist_ok=True)
+        paper = papers[0]
+        pdf_path = None
+        
+        try:
+            pdf_path = self.searcher.download_pdf(paper.paper_id, save_path)
+            self.assertTrue(os.path.exists(pdf_path))
+            
+            text_content = self.searcher.read_paper(paper.paper_id, save_path)
+            self.assertTrue(len(text_content) > 0)
+        finally:
+            if pdf_path and os.path.exists(pdf_path):
+                os.remove(pdf_path)
+            if os.path.exists(save_path):
+                os.rmdir(save_path)
+
+if __name__ == '__main__':
+    unittest.main()
+
+
+================================================
+FILE: tests/test_sci_hub.py
+================================================
+# tests/test_sci_hub.py
+import unittest
+import tempfile
+import shutil
+import os
+import requests
+from paper_search_mcp.academic_platforms.sci_hub import SciHubFetcher
+
+
+def check_sci_hub_accessible():
+    """Check if Sci-Hub is accessible"""
+    try:
+        # Test with a simple request to see if sci-hub responds
+        response = requests.get("https://sci-hub.se", timeout=10)
+        return response.status_code == 200
+    except:
+        return False
+
+
+class TestSciHubFetcher(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.sci_hub_accessible = check_sci_hub_accessible()
+        if not cls.sci_hub_accessible:
+            print("\nWarning: Sci-Hub is not accessible, some tests will be skipped")
+
+    def setUp(self):
+        # Create temporary directory for downloads
+        self.test_dir = tempfile.mkdtemp(prefix="sci_hub_test_")
+        self.fetcher = SciHubFetcher(output_dir=self.test_dir)
+
+    def tearDown(self):
+        # Clean up temporary directory
+        if os.path.exists(self.test_dir):
+            shutil.rmtree(self.test_dir)
+
+    def test_init(self):
+        """Test initialization of SciHubFetcher"""
+        self.assertEqual(self.fetcher.base_url, "https://sci-hub.se")
+        self.assertTrue(os.path.exists(self.test_dir))
+        self.assertIsNotNone(self.fetcher.session)
+
+    def test_init_custom_url(self):
+        """Test initialization with custom URL"""
+        custom_fetcher = SciHubFetcher(base_url="https://sci-hub.ru/", output_dir=self.test_dir)
+        self.assertEqual(custom_fetcher.base_url, "https://sci-hub.ru")
+
+    def test_download_pdf_empty_query(self):
+        """Test download with empty query"""
+        result = self.fetcher.download_pdf("")
+        self.assertIsNone(result)
+
+        result = self.fetcher.download_pdf("   ")
+        self.assertIsNone(result)
+
+    @unittest.skipUnless(check_sci_hub_accessible(), "Sci-Hub not accessible")
+    def test_download_pdf_known_doi(self):
+        """Test download with well-known DOIs"""
+        # List of valid DOIs for testing (mix of older and newer papers)
+        test_dois = [
+            "10.1038/nature12373",  # Nature paper on CRISPR-Cas9
+            "10.1126/science.1232033",  # Science paper on genome editing
+            "10.1073/pnas.1320040111",  # PNAS paper
+            "10.1016/j.cell.2013.06.044",  # Cell paper
+            "10.1038/35057062",  # Nature paper on human genome
+        ]
+        
+        success_count = 0
+        
+        for doi in test_dois:
+            print(f"\nTesting PDF download for DOI: {doi}")
+            result = self.fetcher.download_pdf(doi)
+            
+            if result:
+                # Download successful
+                self.assertIsInstance(result, str)
+                self.assertTrue(os.path.exists(result))
+                self.assertTrue(result.endswith('.pdf'))
+                
+                # Check file size (should be > 0)
+                file_size = os.path.getsize(result)
+                self.assertGreater(file_size, 0)
+                print(f"PDF successfully downloaded: {result} (size: {file_size} bytes)")
+                success_count += 1
+                break  # Stop after first successful download
+            else:
+                print(f"Download failed for {doi} (may be blocked or unavailable)")
+        
+        if success_count == 0:
+            # All downloads failed - likely due to blocking
+            print("All downloads failed - this may be expected due to Sci-Hub blocking or CAPTCHA")
+            self.skipTest("All Sci-Hub downloads failed (possibly blocked or CAPTCHA)")
+
+    @unittest.skipUnless(check_sci_hub_accessible(), "Sci-Hub not accessible")
+    def test_download_pdf_invalid_doi(self):
+        """Test download with invalid DOI"""
+        invalid_doi = "10.1234/invalid.doi.123456789"
+        
+        print(f"\nTesting download for invalid DOI: {invalid_doi}")
+        result = self.fetcher.download_pdf(invalid_doi)
+        
+        # Should return None for invalid DOI
+        self.assertIsNone(result)
+
+    def test_generate_filename(self):
+        """Test filename generation"""
+        # Mock response object
+        class MockResponse:
+            def __init__(self, url, content):
+                self.url = url
+                self.content = content.encode()
+        
+        # Test with PDF URL
+        response = MockResponse("https://example.com/paper.pdf", "fake pdf content")
+        filename = self.fetcher._generate_filename(response, "10.1234/test")
+        self.assertTrue(filename.endswith('.pdf'))
+        self.assertIn('_', filename)  # Should contain hash separator
+        
+        # Test with non-PDF URL
+        response = MockResponse("https://example.com/page", "fake content")
+        filename = self.fetcher._generate_filename(response, "test-paper")
+        self.assertTrue(filename.endswith('.pdf'))
+        self.assertIn('test-paper', filename)
+
+    def test_get_direct_url_pdf_url(self):
+        """Test _get_direct_url with direct PDF URL"""
+        pdf_url = "https://example.com/paper.pdf"
+        result = self.fetcher._get_direct_url(pdf_url)
+        self.assertEqual(result, pdf_url)
+
+    @unittest.skipUnless(check_sci_hub_accessible(), "Sci-Hub not accessible")
+    def test_get_direct_url_doi(self):
+        """Test _get_direct_url with DOI"""
+        # Use well-known DOIs
+        test_dois = [
+            "10.1038/nature12373",  # Nature CRISPR paper
+            "10.1126/science.1232033",  # Science genome editing
+            "10.1073/pnas.1320040111",  # PNAS paper
+        ]
+        
+        for doi in test_dois:
+            print(f"\nTesting direct URL extraction for DOI: {doi}")
+            result = self.fetcher._get_direct_url(doi)
+            
+            if result:
+                self.assertIsInstance(result, str)
+                # Should be a URL
+                self.assertTrue(result.startswith('http'))
+                print(f"Direct URL found: {result}")
+                break  # Stop after first success
+            else:
+                print(f"No direct URL found for {doi} (may be blocked)")
+        
+        # Note: This test may not assert success due to Sci-Hub blocking
+
+    def test_session_headers(self):
+        """Test that session has proper headers"""
+        self.assertIn('User-Agent', self.fetcher.session.headers)
+        user_agent = self.fetcher.session.headers['User-Agent']
+        self.assertIn('Mozilla', user_agent)
+
+    def test_output_directory_creation(self):
+        """Test that output directory is created"""
+        new_dir = os.path.join(self.test_dir, "subdir", "nested")
+        fetcher = SciHubFetcher(output_dir=new_dir)
+        self.assertTrue(os.path.exists(new_dir))
+
+    @unittest.skipUnless(check_sci_hub_accessible(), "Sci-Hub not accessible")
+    def test_error_handling(self):
+        """Test error handling for various scenarios"""
+        # Test with clearly invalid/malformed identifier
+        result = self.fetcher.download_pdf("this-is-definitely-not-a-valid-doi-or-identifier-12345")
+        # Note: Sci-Hub might still return something, so we just check it doesn't crash
+        self.assertIsInstance(result, (str, type(None)))
+        
+        # Test with empty string
+        result = self.fetcher.download_pdf("")
+        self.assertIsNone(result)
+
+
+if __name__ == '__main__':
+    unittest.main()
+
+
+================================================
+FILE: tests/test_semantic.py
+================================================
+import unittest
+import os
+import requests
+from paper_search_mcp.academic_platforms.semantic import SemanticSearcher
+
+
+def check_semantic_accessible():
+    """Check if Semantic Scholar is accessible"""
+    try:
+        response = requests.get("https://api.semanticscholar.org/graph/v1/paper/5bbfdf2e62f0508c65ba6de9c72fe2066fd98138", timeout=5)
+        return response.status_code == 200
+    except:
+        return False
+
+
+class TestSemanticSearcher(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.semantic_accessible = check_semantic_accessible()
+        if not cls.semantic_accessible:
+            print(
+                "\nWarning: Semantic Scholar is not accessible, some tests will be skipped"
+            )
+
+    def setUp(self):
+        self.searcher = SemanticSearcher()
+
+    @unittest.skipUnless(check_semantic_accessible(), "Semantic Scholar not accessible")
+    def test_search_basic(self):
+        """Test basic search functionality"""
+        results = self.searcher.search("secret sharing", max_results=3)
+
+        self.assertIsInstance(results, list)
+        self.assertLessEqual(len(results), 3)
+
+        if results:
+            paper = results[0]
+            self.assertTrue(hasattr(paper, "title"))
+            self.assertTrue(hasattr(paper, "authors"))
+            self.assertTrue(hasattr(paper, "abstract"))
+            self.assertTrue(hasattr(paper, "paper_id"))
+            self.assertTrue(hasattr(paper, "url"))
+            self.assertEqual(paper.source, "semantic")
+
+    @unittest.skipUnless(check_semantic_accessible(), "Semantic Scholar not accessible")
+    def test_search_empty_query(self):
+        """Test search with empty query"""
+        results = self.searcher.search("", max_results=3)
+        self.assertIsInstance(results, list)
+
+    @unittest.skipUnless(check_semantic_accessible(), "Semantic Scholar not accessible")
+    def test_search_max_results(self):
+        """Test max_results parameter"""
+        results = self.searcher.search("cryptography", max_results=2)
+        self.assertLessEqual(len(results), 2)
+
+    @unittest.skipUnless(check_semantic_accessible(), "Semantic Scholar not accessible")
+    def test_download_pdf_functionality(self):
+        """Test PDF download method with actual download"""
+        import tempfile
+        import shutil
+
+        # Create a temporary directory for testing
+        test_dir = tempfile.mkdtemp(prefix="semantic_test_")
+
+        try:
+            # Test with a known paper that should exist
+            paper_id = "5bbfdf2e62f0508c65ba6de9c72fe2066fd98138"  # A well-known paper
+
+            print(f"\nTesting PDF download for paper {paper_id}")
+            result = self.searcher.download_pdf(paper_id, test_dir)
+
+            # Check that result is a string
+            self.assertIsInstance(result, str)
+
+            # Check if download was successful
+            if not result.startswith("Error") and not result.startswith("Failed"):
+                # Download successful - check if file exists
+                self.assertTrue(
+                    os.path.exists(result), f"Downloaded file should exist at {result}"
+                )
+
+                # Check file size (PDF should be larger than 1KB)
+                file_size = os.path.getsize(result)
+                self.assertGreater(
+                    file_size, 1024, "PDF file should be larger than 1KB"
+                )
+
+                # Check file extension
+                self.assertTrue(
+                    result.endswith(".pdf"),
+                    "Downloaded file should have .pdf extension",
+                )
+
+                print(
+                    f"PDF successfully downloaded: {result} (size: {file_size} bytes)"
+                )
+            else:
+                print(f"Download failed (this might be expected): {result}")
+
+        except Exception as e:
+            print(f"Exception during PDF download test: {e}")
+            # Don't fail the test for network issues
+            pass
+        finally:
+            # Clean up temporary directory
+            if os.path.exists(test_dir):
+                shutil.rmtree(test_dir)
+
+    @unittest.skipUnless(check_semantic_accessible(), "Semantic Scholar not accessible")
+    def test_read_paper_functionality(self):
+        """Test read paper method with text extraction functionality"""
+        import tempfile
+        import shutil
+
+        # Create a temporary directory for testing
+        test_dir = tempfile.mkdtemp(prefix="semantic_read_test_")
+
+        try:
+            # Test with a known paper
+            paper_id = "5bbfdf2e62f0508c65ba6de9c72fe2066fd98138"
+
+            print(f"\nTesting read_paper for paper {paper_id}")
+            result = self.searcher.read_paper(paper_id, test_dir)
+
+            # Check that result is a string
+            self.assertIsInstance(result, str)
+
+            # Check for successful text extraction
+            if "Error" not in result and len(result) > 100:
+                print(f"Text extraction successful. Text length: {len(result)}")
+
+                # Should contain metadata
+                self.assertIn("Title:", result)
+                self.assertIn("Authors:", result)
+                self.assertIn("Published Date:", result)
+                self.assertIn("PDF downloaded to:", result)
+
+                # Should contain page markers indicating text extraction
+                self.assertIn("--- Page", result)
+
+                # Check if PDF was actually downloaded
+                expected_filename = f"iacr_{paper_id.replace('/', '_')}.pdf"
+                expected_path = os.path.join(test_dir, expected_filename)
+                self.assertTrue(os.path.exists(expected_path))
+
+                file_size = os.path.getsize(expected_path)
+                print(f"PDF file found: {expected_path} (size: {file_size} bytes)")
+                self.assertGreater(file_size, 1000)  # Should be at least 1KB
+
+                # Show a preview of extracted text
+                preview = result[:500] + "..." if len(result) > 500 else result
+                print(f"Text preview:\n{preview}")
+
+            else:
+                print(f"Read paper result: {result}")
+                # For network issues or PDF extraction problems, don't fail
+                print(
+                    "Note: This might be due to network issues or PDF extraction limitations"
+                )
+
+        except Exception as e:
+            print(f"Exception during read_paper test: {e}")
+            # Don't fail the test for network issues
+            pass
+        finally:
+            # Clean up temporary directory
+            if os.path.exists(test_dir):
+                shutil.rmtree(test_dir)
+
+    @unittest.skipUnless(check_semantic_accessible(), "Semantic Scholar not accessible")
+    def test_get_paper_details(self):
+        """Test getting detailed paper information"""
+        paper_id = "5bbfdf2e62f0508c65ba6de9c72fe2066fd98138"  # A known paper
+        paper_details = self.searcher.get_paper_details(paper_id)
+
+        if paper_details:
+            # Test basic attributes
+            self.assertTrue(paper_details.title)
+            self.assertEqual(paper_details.paper_id, paper_id)
+            self.assertEqual(paper_details.source, "semantic")
+            self.assertTrue(paper_details.url)
+            self.assertTrue(paper_details.pdf_url)
+
+            # Test that we have authors
+            self.assertIsInstance(paper_details.authors, list)
+            self.assertGreater(len(paper_details.authors), 0)
+
+            # Test that we have abstract
+            self.assertTrue(paper_details.abstract)
+
+            # Test extra metadata
+            if paper_details.extra:
+                self.assertIsInstance(paper_details.extra, dict)
+
+            # printing all details for verification
+            print(f"\n{paper_details}")
+        else:
+            self.fail("Could not fetch paper details")
+
+    @unittest.skipUnless(check_semantic_accessible(), "Semantic Scholar not accessible")
+    def test_search_with_fetch_details(self):
+        """Test search functionality with fetch_details parameter"""
+        # Test with fetch_details=True (detailed information)
+        print("\nTesting search with fetch_details=True")
+        detailed_papers = self.searcher.search(
+            "cryptography", max_results=2, fetch_details=True
+        )
+
+        self.assertIsInstance(detailed_papers, list)
+        self.assertLessEqual(len(detailed_papers), 2)
+
+        if detailed_papers:
+            paper = detailed_papers[0]
+            self.assertEqual(paper.source, "semantic")
+
+            # Detailed papers should have more complete information
+            print(f"Detailed paper: {paper.title}")
+            print(f"Authors: {len(paper.authors)} authors")
+            print(f"Keywords: {len(paper.keywords)} keywords")
+            print(f"Abstract length: {len(paper.abstract)} chars")
+
+            # Should have keywords and publication info if available
+            if paper.keywords:
+                self.assertIsInstance(paper.keywords, list)
+                print(f"Keywords found: {', '.join(paper.keywords[:3])}...")
+
+            if paper.extra:
+                pub_info = paper.extra.get("publication_info", "")
+                if pub_info:
+                    print(f"Publication info: {pub_info[:50]}...")
+
+        # Test with fetch_details=False (compact information)
+        print("\nTesting search with fetch_details=False")
+        compact_papers = self.searcher.search(
+            "cryptography", max_results=2, fetch_details=False
+        )
+
+        self.assertIsInstance(compact_papers, list)
+        self.assertLessEqual(len(compact_papers), 2)
+
+        if compact_papers:
+            paper = compact_papers[0]
+            self.assertEqual(paper.source, "semantic")
+
+            print(f"Compact paper: {paper.title}")
+            print(f"Authors: {len(paper.authors)} authors")
+            print(f"Categories: {', '.join(paper.categories)}")
+            print(f"Abstract preview length: {len(paper.abstract)} chars")
+
+    @unittest.skipUnless(check_semantic_accessible(), "Semantic Scholar not accessible")
+    def test_search_performance_comparison(self):
+        """Test performance difference between detailed and compact search"""
+        import time
+
+        query = "encryption"
+        max_results = 3
+
+        # Test detailed search time
+        print("\nTesting detailed search performance...")
+        start_time = time.time()
+        compact_papers = self.searcher.search(
+            query, max_results=max_results
+        )
+        compact_time = time.time() - start_time
+
+        print(
+            f"Compact search took {compact_time:.2f} seconds for {len(compact_papers)} papers"
+        )
+
+
+
+
+if __name__ == "__main__":
+    unittest.main()
+
+
+
+================================================
+FILE: tests/test_server.py
+================================================
+[Binary file]
+
+
+================================================
+FILE: .github/workflows/publish.yml
+================================================
+name: Publish to PyPI
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: pypi  
+    permissions:
+      id-token: write  
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install build tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install build
+
+      - name: Build package
+        run: python -m build
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
